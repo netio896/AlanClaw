@@ -68,6 +68,31 @@ try {
     `status ${webData.response.status}`
   );
 
+  const exportJson = await fetchJson("/api/export/json");
+  record(
+    "GET /api/export/json",
+    exportJson.response.status === 200 && exportJson.json.ok === true && exportJson.json.experts.length === 18,
+    `count ${exportJson.json.experts?.length ?? 0}`
+  );
+
+  const exportCsv = await fetchText("/api/export/csv");
+  record(
+    "GET /api/export/csv",
+    exportCsv.response.status === 200 && exportCsv.text.split("\n")[0].startsWith("slug,title,category"),
+    `status ${exportCsv.response.status}`
+  );
+
+  const preview = await fetchJson("/api/import/preview", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ experts: experts.json.experts }),
+  });
+  record(
+    "POST /api/import/preview",
+    preview.response.status === 200 && preview.json.ok === true && preview.json.diff.total_changes === 0,
+    `changes ${preview.json.diff?.total_changes ?? "n/a"}`
+  );
+
   const save = await fetchJson("/api/experts", {
     method: "POST",
     headers: { "content-type": "application/json" },

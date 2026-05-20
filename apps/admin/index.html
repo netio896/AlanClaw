@@ -117,13 +117,21 @@
           </div>
 
           <section class="import-box">
-            <h3>导入入口</h3>
-            <p>第一版只展示导入 UI，不写回文件。真实保存会在后续通过本地服务接入。</p>
+            <h3>导入 / 导出</h3>
+            <p>导入会先进入预览，不会立刻写盘。确认 diff 后点击保存，才会写回本地专家目录并重新生成派生文件。</p>
+            <input id="importFileInput" type="file" accept=".json,.csv,application/json,text/csv" hidden />
             <div class="import-buttons">
-              <button type="button">CSV</button>
-              <button type="button">JSON</button>
-              <button type="button">Markdown</button>
+              <button type="button" id="importButton">导入文件</button>
+              <button type="button" id="exportJsonButton">导出 JSON</button>
+              <button type="button" id="exportCsvButton">导出 CSV</button>
             </div>
+            <p class="import-status" id="importStatus">等待导入或编辑。</p>
+          </section>
+
+          <section class="diff-box">
+            <h3>保存前 Diff</h3>
+            <p class="diff-summary" id="diffSummary">暂无变更。</p>
+            <div class="diff-list" id="diffList"></div>
           </section>
 
           <section class="check-list" id="validationList"></section>

@@ -99,7 +99,7 @@ export function validateExperts(experts) {
   return errors;
 }
 
-function buildCsv(experts) {
+export function buildCsv(experts) {
   const csvHeader = [
     "slug",
     "title",

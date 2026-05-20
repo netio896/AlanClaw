@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  buildCsv,
   generateExpertCatalog,
   loadExperts,
   validateExperts,
@@ -36,6 +37,63 @@ function sendText(res, status, text, contentType = "text/plain; charset=utf-8") 
     "content-length": Buffer.byteLength(text),
   });
   res.end(text);
+}
+
+function normalizeExperts(experts) {
+  return experts.map((expert) => ({
+    ...expert,
+    sort_order: Number(expert.sort_order),
+    featured: Boolean(expert.featured),
+  }));
+}
+
+function diffExperts(baseExperts, nextExperts) {
+  const baseBySlug = new Map(baseExperts.map((expert) => [expert.slug, expert]));
+  const nextBySlug = new Map(nextExperts.map((expert) => [expert.slug, expert]));
+  const fields = [
+    "title",
+    "category",
+    "card_summary",
+    "about_text",
+    "system_prompt",
+    "tags",
+    "languages_supported",
+    "channels_supported",
+    "featured",
+    "sort_order",
+  ];
+
+  const added = nextExperts.filter((expert) => !baseBySlug.has(expert.slug)).map((expert) => expert.slug);
+  const removed = baseExperts.filter((expert) => !nextBySlug.has(expert.slug)).map((expert) => expert.slug);
+  const modified = [];
+
+  for (const next of nextExperts) {
+    const current = baseBySlug.get(next.slug);
+    if (!current) continue;
+
+    const changes = fields
+      .filter((field) => JSON.stringify(current[field]) !== JSON.stringify(next[field]))
+      .map((field) => ({
+        field,
+        before: current[field],
+        after: next[field],
+      }));
+
+    if (changes.length) {
+      modified.push({
+        slug: next.slug,
+        title: next.title,
+        changes,
+      });
+    }
+  }
+
+  return {
+    added,
+    removed,
+    modified,
+    total_changes: added.length + removed.length + modified.length,
+  };
 }
 
 function readRequestBody(req) {
@@ -103,6 +161,41 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/experts") {
     const experts = loadExperts();
     sendJson(res, 200, { ok: true, count: experts.length, experts });
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/api/export/json") {
+    const experts = loadExperts();
+    sendJson(res, 200, { ok: true, count: experts.length, experts });
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/api/export/csv") {
+    const experts = loadExperts();
+    sendText(res, 200, buildCsv(experts), "text/csv; charset=utf-8");
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/import/preview") {
+    let payload;
+    try {
+      payload = JSON.parse(await readRequestBody(req));
+    } catch (error) {
+      sendJson(res, 400, { ok: false, errors: [error.message] });
+      return;
+    }
+
+    const experts = Array.isArray(payload) ? payload : payload.experts;
+    const errors = validateExperts(experts);
+    if (errors.length) {
+      sendJson(res, 422, { ok: false, errors });
+      return;
+    }
+
+    const normalizedExperts = normalizeExperts(experts);
+    const currentExperts = loadExperts();
+    const diff = diffExperts(currentExperts, normalizedExperts);
+    sendJson(res, 200, { ok: true, count: normalizedExperts.length, diff, experts: normalizedExperts });
     return;
   }
 
