@@ -2,6 +2,7 @@ const experts = Array.isArray(window.ALANCLAW_EXPERTS) ? window.ALANCLAW_EXPERTS
 const teamTemplates = Array.isArray(window.ALANCLAW_TEAM_TEMPLATES) ? window.ALANCLAW_TEAM_TEMPLATES : [];
 
 const storageKey = "alanclaw.myExperts";
+const onboardingDismissKey = "alanclaw.onboardingDismissed";
 const hotSlugs = [
   "myanmar-sales-assistant",
   "telegram-support-expert",
@@ -25,12 +26,25 @@ const state = {
   selectedExpert: null,
   selectedTeam: null,
   savedSlugs: loadSavedSlugs(),
+  onboardingDismissed: loadOnboardingDismissed(),
+  onboardingTeamSlug: teamTemplates.find((team) => team.featured)?.slug ?? teamTemplates[0]?.slug ?? "",
   teamNotice: null,
 };
 
 const elements = {
   expertCount: document.getElementById("expertCount"),
   featuredCount: document.getElementById("featuredCount"),
+  onboardingPanel: document.getElementById("onboardingPanel"),
+  onboardingTeamSelector: document.getElementById("onboardingTeamSelector"),
+  onboardingIndustry: document.getElementById("onboardingIndustry"),
+  onboardingTitle: document.getElementById("onboardingTitle"),
+  onboardingSummary: document.getElementById("onboardingSummary"),
+  onboardingMembers: document.getElementById("onboardingMembers"),
+  onboardingChannels: document.getElementById("onboardingChannels"),
+  onboardingUseCases: document.getElementById("onboardingUseCases"),
+  onboardingOpenTeam: document.getElementById("onboardingOpenTeam"),
+  onboardingAddTeam: document.getElementById("onboardingAddTeam"),
+  onboardingDismiss: document.getElementById("onboardingDismiss"),
   feedTabs: document.getElementById("feedTabs"),
   categoryChips: document.getElementById("categoryChips"),
   libraryChips: document.getElementById("libraryChips"),
@@ -103,8 +117,20 @@ function loadSavedSlugs() {
   }
 }
 
+function loadOnboardingDismissed() {
+  try {
+    return window.localStorage.getItem(onboardingDismissKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
 function persistSavedSlugs() {
   window.localStorage.setItem(storageKey, JSON.stringify(state.savedSlugs));
+}
+
+function persistOnboardingDismissed() {
+  window.localStorage.setItem(onboardingDismissKey, state.onboardingDismissed ? "true" : "false");
 }
 
 function isSaved(slug) {
@@ -126,12 +152,20 @@ function teamExpertSlugs(team) {
     .filter((slug) => experts.some((expert) => expert.slug === slug));
 }
 
-function addTeam(slugs) {
+function selectedOnboardingTeam() {
+  return teamTemplates.find((team) => team.slug === state.onboardingTeamSlug) ?? teamTemplates[0] ?? null;
+}
+
+function shouldShowOnboarding() {
+  return !state.onboardingDismissed && state.savedSlugs.length === 0 && teamTemplates.length > 0;
+}
+
+function addTeam(slugs, teamTitle = state.selectedTeam?.title ?? "推荐团队", options = {}) {
   const before = state.savedSlugs.length;
   state.savedSlugs = [...new Set([...state.savedSlugs, ...slugs])];
   persistSavedSlugs();
   const addedCount = state.savedSlugs.length - before;
-  const teamTitle = state.selectedTeam?.title ?? "推荐团队";
+  const guideToLibrary = options.guideToLibrary === true || shouldShowOnboarding();
   state.teamNotice = {
     title: addedCount > 0 ? "已添加到我的专家" : "这套团队已在我的专家中",
     text:
@@ -139,6 +173,11 @@ function addTeam(slugs) {
         ? `${teamTitle} 已加入工作区，共包含 ${slugs.length} 位专家。`
         : `${teamTitle} 的成员之前已经全部加入你的工作区。`,
   };
+  if (guideToLibrary) {
+    state.screen = "library";
+    state.onboardingDismissed = true;
+    persistOnboardingDismissed();
+  }
   closeTeam();
   render();
   updateTeamButton();
@@ -147,6 +186,12 @@ function addTeam(slugs) {
 function dismissTeamNotice() {
   state.teamNotice = null;
   renderTeamNotice();
+}
+
+function dismissOnboarding() {
+  state.onboardingDismissed = true;
+  persistOnboardingDismissed();
+  render();
 }
 
 function getBrowseExperts() {
@@ -182,6 +227,34 @@ function renderFeedTabs() {
           ${option.label}
         </button>`
     )
+    .join("");
+}
+
+function renderOnboarding() {
+  const visible = shouldShowOnboarding();
+  elements.onboardingPanel.classList.toggle("hidden", !visible);
+  if (!visible) return;
+
+  const team = selectedOnboardingTeam();
+  if (!team) return;
+
+  elements.onboardingTeamSelector.innerHTML = teamTemplates
+    .map(
+      (item) => `
+        <button type="button" class="chip ${item.slug === team.slug ? "chip-active" : ""}" data-onboarding-team="${escapeHtml(item.slug)}">
+          ${escapeHtml(item.industry)}
+        </button>`
+    )
+    .join("");
+
+  elements.onboardingIndustry.textContent = team.industry;
+  elements.onboardingTitle.textContent = team.title;
+  elements.onboardingSummary.textContent = team.card_summary;
+  elements.onboardingMembers.textContent = `${teamExpertSlugs(team).length} 位成员`;
+  elements.onboardingChannels.textContent = team.channels_supported.join(" / ");
+  elements.onboardingUseCases.innerHTML = team.use_cases
+    .slice(0, 3)
+    .map((item) => `<span>${escapeHtml(item)}</span>`)
     .join("");
 }
 
@@ -422,6 +495,7 @@ function updateTeamButton() {
 
 function render() {
   updateSummaryStats();
+  renderOnboarding();
   renderTeamNotice();
   renderFeedTabs();
   renderChips(elements.categoryChips, state.category, "data-category");
@@ -436,7 +510,7 @@ function render() {
 
 document.addEventListener("click", (event) => {
   const target = event.target.closest(
-    "[data-browse-view], [data-category], [data-library-category], [data-open-slug], [data-open-team], [data-save-slug], [data-screen-target], [data-jump-screen], [data-featured-team-action]"
+    "[data-browse-view], [data-category], [data-library-category], [data-open-slug], [data-open-team], [data-save-slug], [data-screen-target], [data-jump-screen], [data-featured-team-action], [data-onboarding-team]"
   );
   if (!target) return;
 
@@ -487,7 +561,13 @@ document.addEventListener("click", (event) => {
 
   if ("featuredTeamAction" in target.dataset) {
     const featuredTeam = teamTemplates.find((team) => team.featured) ?? teamTemplates[0];
-    if (featuredTeam) addTeam(teamExpertSlugs(featuredTeam));
+    if (featuredTeam) addTeam(teamExpertSlugs(featuredTeam), featuredTeam.title, { guideToLibrary: true });
+    return;
+  }
+
+  if (target.dataset.onboardingTeam) {
+    state.onboardingTeamSlug = target.dataset.onboardingTeam;
+    renderOnboarding();
   }
 });
 
@@ -512,9 +592,21 @@ elements.detailAddButton.addEventListener("click", () => {
 
 elements.teamAddButton.addEventListener("click", () => {
   if (state.selectedTeam) {
-    addTeam(teamExpertSlugs(state.selectedTeam));
+    addTeam(teamExpertSlugs(state.selectedTeam), state.selectedTeam.title);
   }
 });
+
+elements.onboardingOpenTeam.addEventListener("click", () => {
+  const team = selectedOnboardingTeam();
+  if (team) openTeam(team.slug);
+});
+
+elements.onboardingAddTeam.addEventListener("click", () => {
+  const team = selectedOnboardingTeam();
+  if (team) addTeam(teamExpertSlugs(team), team.title, { guideToLibrary: true });
+});
+
+elements.onboardingDismiss.addEventListener("click", dismissOnboarding);
 
 elements.teamNoticeDismiss.addEventListener("click", dismissTeamNotice);
 elements.teamNoticeView.addEventListener("click", () => {

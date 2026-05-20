@@ -51,6 +51,34 @@
           </div>
         </section>
 
+        <section class="onboarding-panel hidden" id="onboardingPanel">
+          <div class="section-title onboarding-header">
+            <div>
+              <p class="eyebrow">First-Time Setup</p>
+              <h3>先选一个行业团队开始</h3>
+            </div>
+            <button type="button" class="ghost-icon onboarding-dismiss" id="onboardingDismiss" aria-label="稍后再看">×</button>
+          </div>
+          <div class="onboarding-team-selector" id="onboardingTeamSelector"></div>
+          <article class="onboarding-preview">
+            <div class="card-badge-row">
+              <span class="featured-badge">推荐团队</span>
+              <span class="featured-badge quiet-badge" id="onboardingIndustry"></span>
+            </div>
+            <h3 id="onboardingTitle"></h3>
+            <p id="onboardingSummary"></p>
+            <div class="team-card-meta onboarding-meta">
+              <span id="onboardingMembers"></span>
+              <span id="onboardingChannels"></span>
+            </div>
+            <div class="use-case-row" id="onboardingUseCases"></div>
+            <div class="onboarding-actions">
+              <button type="button" class="secondary-button" id="onboardingOpenTeam">查看团队详情</button>
+              <button type="button" class="primary-button" id="onboardingAddTeam">添加这套团队</button>
+            </div>
+          </article>
+        </section>
+
         <section class="hero-panel">
           <div>
             <p class="hero-kicker">业务场景优先</p>
