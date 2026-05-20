@@ -9,6 +9,7 @@ export const contentDir = path.join(root, "content", "experts");
 export const webDir = path.join(root, "apps", "web");
 export const adminDir = path.join(root, "apps", "admin");
 export const sourceJsonPath = path.join(dataDir, "alanclaw-experts.json");
+export const teamTemplatesPath = path.join(root, "data", "team-templates", "alanclaw-team-templates.json");
 
 const requiredFields = [
   "slug",
@@ -46,6 +47,10 @@ function uniqueDuplicateValues(values) {
 
 export function loadExperts() {
   return JSON.parse(fs.readFileSync(sourceJsonPath, "utf8"));
+}
+
+export function loadTeamTemplates() {
+  return JSON.parse(fs.readFileSync(teamTemplatesPath, "utf8"));
 }
 
 export function validateExperts(experts) {
@@ -187,6 +192,14 @@ export function generateExpertCatalog({ experts = loadExperts() } = {}) {
   writeText(
     path.join(adminDir, "expert-data.js"),
     `window.ALANCLAW_EXPERTS = ${JSON.stringify(normalizedExperts, null, 2)};\n`
+  );
+  writeText(
+    path.join(webDir, "team-data.js"),
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(loadTeamTemplates(), null, 2)};\n`
+  );
+  writeText(
+    path.join(adminDir, "team-data.js"),
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(loadTeamTemplates(), null, 2)};\n`
   );
 
   for (const expert of normalizedExperts) {

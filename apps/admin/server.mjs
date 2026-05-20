@@ -6,6 +6,7 @@ import {
   buildCsv,
   generateExpertCatalog,
   loadExperts,
+  loadTeamTemplates,
   validateExperts,
 } from "../../scripts/generate_expert_catalog.mjs";
 
@@ -161,6 +162,12 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/experts") {
     const experts = loadExperts();
     sendJson(res, 200, { ok: true, count: experts.length, experts });
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/api/team-templates") {
+    const teamTemplates = loadTeamTemplates();
+    sendJson(res, 200, { ok: true, count: teamTemplates.length, team_templates: teamTemplates });
     return;
   }
 

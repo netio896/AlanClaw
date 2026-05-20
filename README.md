@@ -32,11 +32,16 @@ npm run smoke
 - `apps/web/`: 移动端优先的专家广场原型。
 - `apps/admin/`: 本地专家管理台，支持读取、编辑预览、校验和保存。
 - `data/experts/alanclaw-experts.json`: 专家目录唯一源文件。
+- `data/team-templates/alanclaw-team-templates.json`: 行业 Agent Team 模板源文件。
 - `data/experts/alanclaw-experts.csv`: 后台导入用平面表。
 - `content/experts/`: 18 位专家的 Markdown 详情文件。
 - `schemas/expert-entry.schema.json`: 单个专家条目的 JSON schema。
 - `scripts/generate_expert_catalog.mjs`: 专家目录生成器。
 - `scripts/smoke_test.mjs`: 本地验收脚本。
+
+## Product Direction
+
+AlanClaw 的核心差异化从“单个专家”升级为“行业 Agent Team 模板”。用户可以选择建筑、电商、社交媒体营销等行业，直接获得一套基础专家团队，并按需一键加入工作区。
 
 ## Save Flow
 

@@ -292,6 +292,25 @@ textarea { resize: vertical; line-height: 1.5; }
 .diff-item.add strong { color: var(--ok); }
 .diff-item.modify strong { color: var(--warn); }
 .diff-item.remove strong { color: var(--bad); }
+.team-template-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.team-template-item {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+}
+.team-template-item strong { font-size: 13px; }
+.team-template-item span, .team-template-item p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
 .check-list { display: grid; gap: 8px; }
 .check-item {
   display: grid;

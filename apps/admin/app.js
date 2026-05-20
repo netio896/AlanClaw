@@ -1,5 +1,6 @@
 let experts = Array.isArray(window.ALANCLAW_EXPERTS) ? structuredClone(window.ALANCLAW_EXPERTS) : [];
 let baselineExperts = structuredClone(experts);
+const teamTemplates = Array.isArray(window.ALANCLAW_TEAM_TEMPLATES) ? window.ALANCLAW_TEAM_TEMPLATES : [];
 
 const state = {
   selectedSlug: experts[0]?.slug ?? "",
@@ -36,6 +37,7 @@ const elements = {
   previewSummary: document.getElementById("previewSummary"),
   validationList: document.getElementById("validationList"),
   recordMeta: document.getElementById("recordMeta"),
+  teamTemplateList: document.getElementById("teamTemplateList"),
   importButton: document.getElementById("importButton"),
   importFileInput: document.getElementById("importFileInput"),
   exportJsonButton: document.getElementById("exportJsonButton"),
@@ -328,6 +330,19 @@ function renderRecordMeta(expert) {
   elements.recordMeta.innerHTML = rows.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd>`).join("");
 }
 
+function renderTeamTemplates() {
+  elements.teamTemplateList.innerHTML = teamTemplates
+    .map(
+      (team) => `
+        <article class="team-template-item">
+          <strong>${escapeHtml(team.title)}</strong>
+          <span>${escapeHtml(team.industry)} · ${team.recommended_experts.length} 位成员</span>
+          <p>${escapeHtml(team.card_summary)}</p>
+        </article>`
+    )
+    .join("");
+}
+
 function renderValidation() {
   const checks = validateCatalog();
   const allOk = checks.every((check) => check.ok);
@@ -375,6 +390,7 @@ function render() {
   renderEditor();
   renderValidation();
   renderDiff();
+  renderTeamTemplates();
   elements.saveButton.disabled = !state.apiAvailable;
   setSaveStatus(state.apiAvailable ? "本地服务已连接" : "静态预览模式", state.apiAvailable ? "ok" : "warn");
 }

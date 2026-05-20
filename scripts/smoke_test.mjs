@@ -55,6 +55,13 @@ try {
   const experts = await fetchJson("/api/experts");
   record("GET /api/experts", experts.response.status === 200 && experts.json.count === 18, `count ${experts.json.count}`);
 
+  const teamTemplates = await fetchJson("/api/team-templates");
+  record(
+    "GET /api/team-templates",
+    teamTemplates.response.status === 200 && teamTemplates.json.count === 3,
+    `count ${teamTemplates.json.count}`
+  );
+
   const adminPage = await fetchText("/");
   record("GET /", adminPage.response.status === 200 && adminPage.text.includes("AlanClaw 专家管理台"), `status ${adminPage.response.status}`);
 
@@ -66,6 +73,15 @@ try {
     "GET /web/expert-data.js",
     webData.response.status === 200 && webData.text.includes("window.ALANCLAW_EXPERTS") && webData.text.includes("缅甸销售助理"),
     `status ${webData.response.status}`
+  );
+
+  const teamData = await fetchText("/web/team-data.js");
+  record(
+    "GET /web/team-data.js",
+    teamData.response.status === 200 &&
+      teamData.text.includes("window.ALANCLAW_TEAM_TEMPLATES") &&
+      teamData.text.includes("construction-project-team"),
+    `status ${teamData.response.status}`
   );
 
   const exportJson = await fetchJson("/api/export/json");
