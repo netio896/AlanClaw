@@ -44,8 +44,12 @@
               <p class="eyebrow">Edit Preview</p>
               <h2 id="editorTitle">选择一个专家</h2>
             </div>
-            <span class="status-pill neutral">预览模式</span>
+            <div class="editor-actions">
+              <button type="button" class="secondary-button" id="reloadButton">重新加载</button>
+              <button type="button" class="primary-button" id="saveButton">保存到本地</button>
+            </div>
           </div>
+          <p class="save-status neutral" id="saveStatus">正在连接本地服务</p>
 
           <div class="form-grid">
             <label>
@@ -75,6 +79,22 @@
             <label class="wide">
               <span>系统提示词</span>
               <textarea id="fieldPrompt" rows="9"></textarea>
+            </label>
+            <label class="wide">
+              <span>标签，逗号分隔</span>
+              <input id="fieldTags" type="text" />
+            </label>
+            <label>
+              <span>语言，逗号分隔</span>
+              <input id="fieldLanguages" type="text" />
+            </label>
+            <label>
+              <span>渠道，逗号分隔</span>
+              <input id="fieldChannels" type="text" />
+            </label>
+            <label class="toggle-row">
+              <span>精选</span>
+              <input id="fieldFeatured" type="checkbox" />
             </label>
           </div>
 
@@ -120,4 +140,3 @@
     <script src="./app.js"></script>
   </body>
 </html>
-
