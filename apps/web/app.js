@@ -35,6 +35,7 @@ const state = {
 const elements = {
   expertCount: document.getElementById("expertCount"),
   featuredCount: document.getElementById("featuredCount"),
+  headerAction: document.getElementById("headerAction"),
   onboardingPanel: document.getElementById("onboardingPanel"),
   onboardingTeamSelector: document.getElementById("onboardingTeamSelector"),
   onboardingIndustry: document.getElementById("onboardingIndustry"),
@@ -637,6 +638,7 @@ elements.onboardingAddTeam.addEventListener("click", () => {
 
 elements.onboardingDismiss.addEventListener("click", dismissOnboarding);
 elements.reopenOnboarding.addEventListener("click", reopenOnboarding);
+elements.headerAction.addEventListener("click", reopenOnboarding);
 
 elements.teamNoticeDismiss.addEventListener("click", dismissTeamNotice);
 elements.teamNoticeView.addEventListener("click", () => {
