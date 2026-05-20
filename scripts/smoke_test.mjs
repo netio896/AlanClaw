@@ -65,6 +65,25 @@ try {
   const adminPage = await fetchText("/");
   record("GET /", adminPage.response.status === 200 && adminPage.text.includes("AlanClaw 专家管理台"), `status ${adminPage.response.status}`);
 
+  const adminApp = await fetchText("/app.js");
+  const adminTeamEditor = await fetchText("/team-editor.js");
+  const adminButtonWiringOk =
+    adminPage.text.includes('data-admin-workspace="experts"') &&
+    adminPage.text.includes('data-admin-workspace="teams"') &&
+    adminApp.text.includes('elements.saveButton.addEventListener("click", saveCatalog)') &&
+    adminApp.text.includes('elements.reloadButton.addEventListener("click", loadFromApi)') &&
+    adminApp.text.includes('elements.importButton.addEventListener("click"') &&
+    adminApp.text.includes('elements.exportJsonButton.addEventListener("click"') &&
+    adminApp.text.includes('elements.exportCsvButton.addEventListener("click"') &&
+    adminTeamEditor.text.includes('teamElements.addMemberButton.addEventListener("click"') &&
+    adminTeamEditor.text.includes('teamElements.reloadButton.addEventListener("click", loadTeamTemplatesFromApi)') &&
+    adminTeamEditor.text.includes('teamElements.saveButton.addEventListener("click", saveTeamTemplates)');
+  record(
+    "Admin button wiring",
+    adminApp.response.status === 200 && adminTeamEditor.response.status === 200 && adminButtonWiringOk,
+    `status ${adminApp.response.status}/${adminTeamEditor.response.status}`
+  );
+
   const webPage = await fetchText("/web/index.html");
   record("GET /web/index.html", webPage.response.status === 200 && webPage.text.includes("AlanClaw 专家广场"), `status ${webPage.response.status}`);
 

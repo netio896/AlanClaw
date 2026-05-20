@@ -232,7 +232,7 @@ function renderTeamList() {
       (team) => `
         <button type="button" class="expert-row ${team.slug === teamState.selectedSlug ? "active" : ""}" data-team-slug="${teamEscapeHtml(team.slug)}">
           <strong>${teamEscapeHtml(team.title)}</strong>
-          <span>${teamEscapeHtml(team.industry)} · ${team.recommended_experts.length} members</span>
+          <span>${teamEscapeHtml(team.industry)} · ${team.recommended_experts.length} 位成员</span>
         </button>`
     )
     .join("");
