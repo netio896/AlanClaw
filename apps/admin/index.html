@@ -10,7 +10,7 @@
     <div class="admin-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Catalog Admin</p>
+          <p class="eyebrow">专家目录后台</p>
           <h1>AlanClaw 专家管理台</h1>
         </div>
         <div class="topbar-actions">
@@ -30,7 +30,7 @@
         <aside class="panel list-panel">
           <div class="panel-header">
             <div>
-              <p class="eyebrow">Experts</p>
+              <p class="eyebrow">专家</p>
               <h2>专家列表</h2>
             </div>
             <span class="count-pill" id="listCount">0</span>
@@ -46,7 +46,7 @@
         <section class="panel editor-panel">
           <div class="panel-header">
             <div>
-              <p class="eyebrow">Edit Preview</p>
+              <p class="eyebrow">编辑预览</p>
               <h2 id="editorTitle">选择一个专家</h2>
             </div>
             <div class="editor-actions">
@@ -56,7 +56,7 @@
           </div>
           <section class="admin-guide">
             <h3>怎么用</h3>
-            <p>先从左侧选择专家，再修改中间字段，最后查看右侧校验和 diff，确认后保存到本地。</p>
+            <p>先从左侧选择专家，再修改中间字段，最后查看右侧校验和变更，确认后保存到本地。</p>
           </section>
           <p class="save-status neutral" id="saveStatus">正在连接本地服务</p>
 
@@ -70,7 +70,7 @@
               <input id="fieldCategory" type="text" />
             </label>
             <label>
-              <span>Slug</span>
+              <span>标识</span>
               <input id="fieldSlug" type="text" readonly />
             </label>
             <label>
@@ -113,21 +113,21 @@
               <h3 id="previewTitle">未选择专家</h3>
               <p id="previewSummary">从左侧选择一位专家后，这里会显示专家广场卡片预览。</p>
             </div>
-            <button type="button" class="primary-button">添加</button>
+            <span class="preview-note">仅预览卡片样式</span>
           </div>
         </section>
 
         <aside class="panel validation-panel">
           <div class="panel-header">
             <div>
-              <p class="eyebrow">Validation</p>
+              <p class="eyebrow">校验</p>
               <h2>导入校验</h2>
             </div>
           </div>
 
           <section class="import-box">
             <h3>导入 / 导出</h3>
-            <p>导入会先进入预览，不会立刻写盘。确认 diff 后点击保存，才会写回本地专家目录并重新生成派生文件。</p>
+            <p>导入会先进入预览，不会立刻写盘。确认变更后点击保存，才会写回本地专家目录并重新生成派生文件。</p>
             <input id="importFileInput" type="file" accept=".json,.csv,application/json,text/csv" hidden />
             <div class="import-buttons">
               <button type="button" id="importButton">导入文件</button>
@@ -138,7 +138,7 @@
           </section>
 
           <section class="diff-box">
-            <h3>保存前 Diff</h3>
+            <h3>保存前变更</h3>
             <p class="diff-summary" id="diffSummary">暂无变更。</p>
             <div class="diff-list" id="diffList"></div>
           </section>
@@ -160,7 +160,7 @@
       <section class="team-editor-block workspace-shell" id="teamsWorkspace" data-workspace-panel="teams">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Industry Teams</p>
+            <p class="eyebrow">行业团队</p>
             <h2>行业 Agent Team 模板编辑器</h2>
           </div>
           <div class="editor-actions">
@@ -173,7 +173,7 @@
           <div class="guide-list">
             <p>1. 选择团队模板</p>
             <p>2. 修改团队信息或推荐专家</p>
-            <p>3. 查看右侧校验和 diff</p>
+            <p>3. 查看右侧校验和变更</p>
             <p>4. 保存到本地</p>
             <p>5. 回到 Web 刷新查看效果</p>
           </div>
@@ -184,7 +184,7 @@
           <aside class="panel list-panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Templates</p>
+                <p class="eyebrow">团队模板</p>
                 <h2>团队列表</h2>
               </div>
               <span class="count-pill" id="teamListCount">0</span>
@@ -195,46 +195,46 @@
           <section class="panel editor-panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Team Editor</p>
+                <p class="eyebrow">团队编辑</p>
                 <h2 id="teamEditorTitle">选择一个团队模板</h2>
               </div>
             </div>
 
             <div class="form-grid">
               <label>
-                <span>Title</span>
+                <span>团队标题</span>
                 <input id="teamFieldTitle" type="text" />
               </label>
               <label>
-                <span>Industry</span>
+                <span>行业</span>
                 <input id="teamFieldIndustry" type="text" />
               </label>
               <label>
-                <span>Slug</span>
+                <span>标识</span>
                 <input id="teamFieldSlug" type="text" readonly />
               </label>
               <label>
-                <span>Sort order</span>
+                <span>排序</span>
                 <input id="teamFieldSortOrder" type="number" />
               </label>
               <label class="wide">
-                <span>Card summary</span>
+                <span>卡片摘要</span>
                 <textarea id="teamFieldSummary" rows="3"></textarea>
               </label>
               <label class="wide">
-                <span>Use cases，逗号或换行分隔</span>
+                <span>用例，逗号或换行分隔</span>
                 <textarea id="teamFieldUseCases" rows="4"></textarea>
               </label>
               <label>
-                <span>Languages，逗号分隔</span>
+                <span>语言，逗号分隔</span>
                 <input id="teamFieldLanguages" type="text" />
               </label>
               <label>
-                <span>Channels，逗号分隔</span>
+                <span>渠道，逗号分隔</span>
                 <input id="teamFieldChannels" type="text" />
               </label>
               <label class="toggle-row">
-                <span>Featured</span>
+                <span>精选</span>
                 <input id="teamFieldFeatured" type="checkbox" />
               </label>
             </div>
@@ -242,7 +242,7 @@
             <section class="member-editor">
               <div class="panel-header compact-header">
                 <div>
-                  <p class="eyebrow">Members</p>
+                  <p class="eyebrow">团队成员</p>
                   <h3>推荐专家成员</h3>
                 </div>
                 <button type="button" class="secondary-button" id="addTeamMemberButton">添加成员</button>
@@ -255,12 +255,12 @@
           <aside class="panel validation-panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Team Validation</p>
+                <p class="eyebrow">团队校验</p>
                 <h2>团队校验</h2>
               </div>
             </div>
             <section class="diff-box">
-              <h3>保存前 Diff</h3>
+              <h3>保存前变更</h3>
               <p class="diff-summary" id="teamDiffSummary">暂无变更。</p>
               <div class="diff-list" id="teamDiffList"></div>
             </section>

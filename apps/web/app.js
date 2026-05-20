@@ -296,7 +296,7 @@ function buildExpertCard(expert) {
           <p>${escapeHtml(expert.card_summary)}</p>
         </div>
         <button type="button" class="card-action ${saved ? "saved" : ""}" data-save-slug="${escapeHtml(expert.slug)}">
-          ${saved ? "已添加" : "添加"}
+          ${saved ? "移除" : "添加"}
         </button>
       </header>
       <footer>
@@ -329,7 +329,7 @@ function buildTeamCard(team) {
       <div class="use-case-row">
         ${team.use_cases.slice(0, 3).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
       </div>
-      <button type="button" class="primary-button" data-open-team="${escapeHtml(team.slug)}">查看团队</button>
+      <button type="button" class="secondary-button" data-open-team="${escapeHtml(team.slug)}">查看团队</button>
     </article>
   `;
 }
@@ -342,7 +342,7 @@ function renderExpertList() {
     latest: "最新上架",
   };
 
-  elements.listEyebrow.textContent = state.browseView === "latest" ? "Latest Agents" : "Expert Cards";
+  elements.listEyebrow.textContent = state.browseView === "latest" ? "最新上新" : "专家目录";
   elements.listHeading.textContent = headingMap[state.browseView];
   elements.resultMeta.textContent = `${filtered.length} 个结果`;
   elements.expertList.innerHTML = filtered.length
@@ -370,7 +370,7 @@ function renderTeamMarket() {
     return categoryPass && (!keyword || text.includes(keyword));
   });
 
-  elements.listEyebrow.textContent = "Industry Agent Teams";
+  elements.listEyebrow.textContent = "行业团队";
   elements.listHeading.textContent = "推荐行业团队";
   elements.resultMeta.textContent = `${filtered.length} 套模板`;
   elements.teamList.innerHTML = filtered.length
@@ -494,7 +494,7 @@ function closeTeam() {
 
 function updateDetailButton() {
   if (!state.selectedExpert) return;
-  elements.detailAddButton.textContent = isSaved(state.selectedExpert.slug) ? "已添加到我的专家" : "添加专家";
+  elements.detailAddButton.textContent = isSaved(state.selectedExpert.slug) ? "移出我的专家" : "添加专家";
 }
 
 function updateTeamButton() {

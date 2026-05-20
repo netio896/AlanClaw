@@ -146,9 +146,9 @@ function validateTeamCatalog(catalog = editableTeamTemplates) {
       detail: `当前 ${catalog.length} 套模板。`,
     },
     {
-      label: "Slug 唯一",
+      label: "团队标识唯一",
       ok: slugDuplicates.size === 0,
-      detail: slugDuplicates.size ? `重复：${[...slugDuplicates].join(", ")}` : "没有重复 slug。",
+      detail: slugDuplicates.size ? `重复：${[...slugDuplicates].join(", ")}` : "没有重复团队标识。",
     },
     {
       label: "排序唯一",
@@ -161,7 +161,7 @@ function validateTeamCatalog(catalog = editableTeamTemplates) {
       detail:
         unknownMembers.length || duplicateMembers.length
           ? `未知/重复专家：${[...unknownMembers, ...duplicateMembers].join(", ")}`
-          : "所有推荐专家 slug 都存在且不重复。",
+          : "所有推荐专家标识都存在且不重复。",
     },
     {
       label: "必填字段",
@@ -169,12 +169,12 @@ function validateTeamCatalog(catalog = editableTeamTemplates) {
       detail:
         missingRequired.length || incompleteMembers.length
           ? `缺字段：${[...missingRequired.map((team) => team.slug), ...incompleteMembers].join(", ")}`
-          : "模板字段和成员 role/reason 都有内容。",
+          : "模板字段和成员角色/原因都有内容。",
     },
     {
       label: "数组字段",
       ok: missingArrays.length === 0,
-      detail: missingArrays.length ? `数组异常：${missingArrays.map((team) => team.slug).join(", ")}` : "use_cases、成员、语言和渠道字段正常。",
+      detail: missingArrays.length ? `数组异常：${missingArrays.map((team) => team.slug).join(", ")}` : "用例、成员、语言和渠道字段正常。",
     },
   ];
 }
@@ -261,15 +261,15 @@ function renderTeamMembers(team) {
       (member, index) => `
         <article class="member-row" data-member-index="${index}">
           <label>
-            <span>Expert slug</span>
+            <span>专家标识</span>
             <input list="expertSlugOptions" value="${teamEscapeHtml(member.slug)}" data-member-field="slug" />
           </label>
           <label>
-            <span>Role</span>
+            <span>成员角色</span>
             <input value="${teamEscapeHtml(member.role)}" data-member-field="role" />
           </label>
           <label class="wide">
-            <span>Reason</span>
+            <span>加入原因</span>
             <textarea rows="2" data-member-field="reason">${teamEscapeHtml(member.reason)}</textarea>
           </label>
           <button type="button" class="secondary-button remove-member-button" data-remove-member="${index}">删除成员</button>
@@ -326,7 +326,7 @@ function updateTeamFromFields() {
   renderTeamList();
   renderTeamValidation();
   renderTeamDiff();
-  setTeamStatus(teamState.apiAvailable ? "团队模板有未保存修改，请检查 diff 后保存。" : "静态模式无法保存。", teamState.apiAvailable ? "warn" : "bad");
+  setTeamStatus(teamState.apiAvailable ? "团队模板有未保存修改，请检查右侧变更后保存。" : "静态模式无法保存。", teamState.apiAvailable ? "warn" : "bad");
 }
 
 function updateMemberField(index, field, value) {
@@ -338,7 +338,7 @@ function updateMemberField(index, field, value) {
   renderTeamList();
   renderTeamValidation();
   renderTeamDiff();
-  setTeamStatus("团队成员有未保存修改，请检查 diff 后保存。", "warn");
+  setTeamStatus("团队成员有未保存修改，请检查右侧变更后保存。", "warn");
 }
 
 async function loadTeamTemplatesFromApi() {
@@ -451,7 +451,7 @@ document.addEventListener("click", (event) => {
     renderTeamEditor();
     renderTeamValidation();
     renderTeamDiff();
-    setTeamStatus("团队成员有未保存修改，请检查 diff 后保存。", "warn");
+    setTeamStatus("团队成员有未保存修改，请检查右侧变更后保存。", "warn");
   }
 });
 

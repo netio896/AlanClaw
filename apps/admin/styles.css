@@ -237,6 +237,15 @@ textarea { resize: vertical; line-height: 1.5; }
   padding: 16px;
 }
 .preview-card p { margin-top: 8px; color: var(--muted); line-height: 1.5; }
+.preview-note {
+  align-self: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
 .featured-badge {
   display: inline-flex;
   margin-bottom: 8px;

@@ -66,7 +66,7 @@ try {
   record("GET /", adminPage.response.status === 200 && adminPage.text.includes("AlanClaw 专家管理台"), `status ${adminPage.response.status}`);
 
   const webPage = await fetchText("/web/index.html");
-  record("GET /web/index.html", webPage.response.status === 200 && webPage.text.includes("AlanClaw Experts"), `status ${webPage.response.status}`);
+  record("GET /web/index.html", webPage.response.status === 200 && webPage.text.includes("AlanClaw 专家广场"), `status ${webPage.response.status}`);
 
   const webData = await fetchText("/web/expert-data.js");
   record(

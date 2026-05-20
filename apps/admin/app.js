@@ -61,6 +61,8 @@ function setWorkspace(workspace) {
   });
 }
 
+setWorkspace("experts");
+
 const editableFields = [
   "fieldTitle",
   "fieldCategory",
@@ -192,9 +194,9 @@ function validateCatalog(catalog = experts) {
       detail: `当前 ${catalog.length} 条，v1 目标为 18 条。`,
     },
     {
-      label: "Slug 唯一",
+      label: "标识唯一",
       ok: slugDuplicates.size === 0,
-      detail: slugDuplicates.size ? `重复：${[...slugDuplicates].join(", ")}` : "没有重复 slug。",
+      detail: slugDuplicates.size ? `重复：${[...slugDuplicates].join(", ")}` : "没有重复标识。",
     },
     {
       label: "排序唯一",
@@ -332,7 +334,7 @@ function renderEditor() {
 
 function renderRecordMeta(expert) {
   const rows = [
-    ["Slug", expert.slug],
+    ["标识", expert.slug],
     ["分类", expert.category],
     ["标签", expert.tags.join(", ")],
     ["语言", expert.languages_supported.join(" / ")],
@@ -421,7 +423,7 @@ function updatePreviewFromFields() {
   renderList();
   renderValidation();
   renderDiff();
-  setSaveStatus(state.apiAvailable ? "有未保存修改，请检查右侧 diff 后保存" : "静态模式无法保存", state.apiAvailable ? "warn" : "bad");
+  setSaveStatus(state.apiAvailable ? "有未保存修改，请检查右侧变更后保存。" : "静态模式无法保存。", state.apiAvailable ? "warn" : "bad");
 }
 
 async function loadFromApi() {
@@ -481,7 +483,7 @@ async function saveCatalog() {
     state.dirty = false;
     render();
     setSaveStatus(`已保存 ${payload.count} 条专家，并重新生成派生文件。`, "ok");
-    setImportStatus("保存完成，当前 diff 已清空。", "ok");
+    setImportStatus("保存完成，当前变更已清空。", "ok");
   } catch (error) {
     setSaveStatus(error.message, "bad");
   } finally {
@@ -569,7 +571,7 @@ async function importFile(file) {
     elements.searchInput.value = "";
     render();
     setImportStatus(`导入预览已载入：${payload.count} 条，待保存变更 ${payload.diff.total_changes} 项。`, payload.diff.total_changes ? "warn" : "ok");
-    setSaveStatus("导入内容尚未写盘，请检查 diff 后保存。", "warn");
+    setSaveStatus("导入内容尚未写盘，请检查右侧变更后保存。", "warn");
   } catch (error) {
     setImportStatus(error.message, "bad");
   } finally {
