@@ -9,6 +9,7 @@ import {
 } from "../../scripts/generate_expert_catalog.mjs";
 
 const adminDir = path.dirname(fileURLToPath(import.meta.url));
+const webDir = path.resolve(adminDir, "..", "web");
 const port = Number(process.env.PORT || 4176);
 const maxBodyBytes = 2_000_000;
 
@@ -57,11 +58,11 @@ function readRequestBody(req) {
   });
 }
 
-async function serveStatic(req, res, pathname) {
+async function serveStaticFrom(res, baseDir, pathname) {
   const requestedPath = pathname === "/" ? "/index.html" : pathname;
-  const resolvedPath = path.resolve(adminDir, `.${decodeURIComponent(requestedPath)}`);
+  const resolvedPath = path.resolve(baseDir, `.${decodeURIComponent(requestedPath)}`);
 
-  if (!resolvedPath.startsWith(adminDir)) {
+  if (!resolvedPath.startsWith(baseDir)) {
     sendText(res, 403, "Forbidden");
     return;
   }
@@ -77,6 +78,20 @@ async function serveStatic(req, res, pathname) {
   } catch {
     sendText(res, 404, "Not Found");
   }
+}
+
+async function serveStatic(req, res, pathname) {
+  if (pathname === "/web" || pathname === "/web/") {
+    await serveStaticFrom(res, webDir, "/index.html");
+    return;
+  }
+
+  if (pathname.startsWith("/web/")) {
+    await serveStaticFrom(res, webDir, pathname.slice("/web".length));
+    return;
+  }
+
+  await serveStaticFrom(res, adminDir, pathname);
 }
 
 async function handleApi(req, res, pathname) {
