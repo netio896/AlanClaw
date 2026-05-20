@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlanClaw Experts</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Myanmar AI Agent Marketplace</p>
+          <h1>AlanClaw</h1>
+        </div>
+        <button class="ghost-icon" id="headerAction" type="button" aria-label="查看更多">...</button>
+      </header>
+
+      <main class="screen screen-active" id="screen-experts" data-screen="experts">
+        <section class="hero-panel">
+          <div>
+            <p class="hero-kicker">专家广场</p>
+            <h2>为缅甸业务场景准备的可执行专家库</h2>
+            <p class="hero-copy">先从销售、客服、内容、文档和运营场景切入，快速找到能直接上手的 Agent 模板。</p>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <strong id="expertCount">18</strong>
+              <span>位专家</span>
+            </div>
+            <div>
+              <strong id="featuredCount">0</strong>
+              <span>精选</span>
+            </div>
+          </div>
+        </section>
+
+        <label class="search-bar">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="搜索专家、分类或标签" />
+        </label>
+
+        <section class="segment-group">
+          <div class="segmented-control" id="feedTabs"></div>
+          <div class="chip-row" id="categoryChips"></div>
+        </section>
+
+        <section class="section-title">
+          <div>
+            <p class="eyebrow">精选推荐</p>
+            <h3 id="listHeading">推荐专家</h3>
+          </div>
+          <span id="resultMeta" class="meta-pill"></span>
+        </section>
+
+        <section class="card-list" id="expertList"></section>
+      </main>
+
+      <main class="screen" id="screen-my-experts" data-screen="library">
+        <section class="page-block">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">My Workspace</p>
+              <h2>我的专家</h2>
+            </div>
+            <span class="meta-pill" id="myExpertCount">0 个已添加</span>
+          </div>
+          <div class="chip-row chip-row-static" id="libraryChips"></div>
+          <div class="card-list compact-list" id="myExpertList"></div>
+          <div class="empty-state" id="libraryEmpty">
+            <h3>还没有添加专家</h3>
+            <p>先去专家页把常用的销售、客服或内容专家加入你的工作区。</p>
+            <button type="button" class="primary-button" data-jump-screen="experts">去添加专家</button>
+          </div>
+        </section>
+      </main>
+
+      <main class="screen" id="screen-files" data-screen="files">
+        <section class="page-block">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Next Step</p>
+              <h2>文件工作区</h2>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h3>文件能力将在下一阶段接入</h3>
+            <p>这一页先保留给 PDF、Word、Excel、扫描件与知识库问答。当前先推荐和文件场景最接近的 3 位专家。</p>
+          </div>
+          <div class="mini-list" id="fileRecommendations"></div>
+        </section>
+      </main>
+
+      <main class="screen" id="screen-profile" data-screen="profile">
+        <section class="page-block">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Profile</p>
+              <h2>我的</h2>
+            </div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-avatar">A</div>
+            <div>
+              <h3>AlanClaw Preview</h3>
+              <p>移动端优先的专家广场原型，当前使用本地专家库和前端本地状态。</p>
+            </div>
+          </div>
+          <div class="settings-list">
+            <article>
+              <span>语言</span>
+              <strong>Burmese / English / Chinese</strong>
+            </article>
+            <article>
+              <span>目标渠道</span>
+              <strong>Telegram / Facebook / Email / Web</strong>
+            </article>
+            <article>
+              <span>数据来源</span>
+              <strong>AlanClaw 专家目录 v1</strong>
+            </article>
+            <article>
+              <span>当前模式</span>
+              <strong>轻交互原型</strong>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" id="bottomNav">
+        <button type="button" class="nav-item nav-item-active" data-screen-target="experts">
+          <span>◆</span>
+          <strong>专家</strong>
+        </button>
+        <button type="button" class="nav-item" data-screen-target="library">
+          <span>○</span>
+          <strong>我的专家</strong>
+        </button>
+        <button type="button" class="nav-item" data-screen-target="files">
+          <span>□</span>
+          <strong>文件</strong>
+        </button>
+        <button type="button" class="nav-item" data-screen-target="profile">
+          <span>△</span>
+          <strong>我的</strong>
+        </button>
+      </nav>
+    </div>
+
+    <div class="overlay hidden" id="detailOverlay" aria-hidden="true">
+      <div class="overlay-backdrop" data-close-detail></div>
+      <section class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <header class="detail-header">
+          <div>
+            <p class="eyebrow" id="detailCategory"></p>
+            <h2 id="detailTitle"></h2>
+          </div>
+        </header>
+        <div class="detail-meta" id="detailTags"></div>
+        <div class="detail-grid">
+          <article>
+            <span>语言支持</span>
+            <strong id="detailLanguages"></strong>
+          </article>
+          <article>
+            <span>渠道支持</span>
+            <strong id="detailChannels"></strong>
+          </article>
+        </div>
+        <section class="detail-section">
+          <h3>卡片简介</h3>
+          <p id="detailSummary"></p>
+        </section>
+        <section class="detail-section">
+          <h3>关于我</h3>
+          <p id="detailAbout"></p>
+        </section>
+        <section class="detail-section">
+          <h3>系统提示词预览</h3>
+          <pre id="detailPrompt"></pre>
+        </section>
+        <footer class="detail-footer">
+          <button type="button" class="secondary-button" data-close-detail>返回列表</button>
+          <button type="button" class="primary-button" id="detailAddButton">添加专家</button>
+        </footer>
+      </section>
+    </div>
+
+    <script src="./expert-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
