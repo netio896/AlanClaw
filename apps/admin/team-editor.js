@@ -102,6 +102,7 @@ function duplicateValues(values) {
   const seen = new Set();
   const duplicates = new Set();
   values.forEach((value) => {
+    if (value === undefined || value === null || value === "" || Number.isNaN(value)) return;
     if (seen.has(value)) duplicates.add(value);
     seen.add(value);
   });
@@ -134,6 +135,9 @@ function validateTeamCatalog(catalog = editableTeamTemplates) {
       .filter((member) => !member.slug || !member.role || !member.reason)
       .map((member) => `${team.slug}: ${member.slug || "(empty)"}`)
   );
+  const duplicateMembers = catalog.flatMap((team) =>
+    [...duplicateValues(team.recommended_experts.map((member) => member.slug))].map((slug) => `${team.slug}: ${slug}`)
+  );
 
   return [
     {
@@ -153,8 +157,11 @@ function validateTeamCatalog(catalog = editableTeamTemplates) {
     },
     {
       label: "推荐专家存在",
-      ok: unknownMembers.length === 0,
-      detail: unknownMembers.length ? `未知专家：${unknownMembers.join(", ")}` : "所有推荐专家 slug 都存在。",
+      ok: unknownMembers.length === 0 && duplicateMembers.length === 0,
+      detail:
+        unknownMembers.length || duplicateMembers.length
+          ? `未知/重复专家：${[...unknownMembers, ...duplicateMembers].join(", ")}`
+          : "所有推荐专家 slug 都存在且不重复。",
     },
     {
       label: "必填字段",

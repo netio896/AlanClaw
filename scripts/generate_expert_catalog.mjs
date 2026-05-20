@@ -39,6 +39,7 @@ function uniqueDuplicateValues(values) {
   const seen = new Set();
   const duplicates = new Set();
   for (const value of values) {
+    if (value === undefined || value === null || value === "" || Number.isNaN(value)) continue;
     if (seen.has(value)) duplicates.add(value);
     seen.add(value);
   }
@@ -92,6 +93,7 @@ export function validateTeamTemplates(teamTemplates, experts = loadExperts()) {
     if (!Array.isArray(team?.recommended_experts) || team.recommended_experts.length === 0) {
       errors.push(`${ref} has invalid recommended_experts`);
     } else {
+      const memberSlugs = [];
       team.recommended_experts.forEach((member, memberIndex) => {
         const memberRef = `${ref}.recommended_experts[${memberIndex}]`;
         if (typeof member?.slug !== "string" || !member.slug.trim()) {
@@ -99,6 +101,7 @@ export function validateTeamTemplates(teamTemplates, experts = loadExperts()) {
         } else if (!expertSlugs.has(member.slug)) {
           errors.push(`${memberRef} references unknown expert slug: ${member.slug}`);
         }
+        memberSlugs.push(member?.slug);
 
         for (const field of ["role", "reason"]) {
           if (typeof member?.[field] !== "string" || !member[field].trim()) {
@@ -106,6 +109,10 @@ export function validateTeamTemplates(teamTemplates, experts = loadExperts()) {
           }
         }
       });
+
+      for (const duplicateMemberSlug of uniqueDuplicateValues(memberSlugs)) {
+        errors.push(`${ref} has duplicate recommended expert slug: ${duplicateMemberSlug}`);
+      }
     }
 
     slugs.push(team?.slug);

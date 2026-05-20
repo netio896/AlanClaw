@@ -18,6 +18,12 @@ Source of truth:
 data/team-templates/alanclaw-team-templates.json
 ```
 
+Shape reference:
+
+```text
+schemas/team-template.schema.json
+```
+
 Generated static data:
 
 ```text
@@ -51,6 +57,7 @@ POST /api/team-templates
 - `use_cases` must be a non-empty array.
 - `recommended_experts` must be a non-empty array.
 - Every `recommended_experts[].slug` must exist in the 18-expert catalog.
+- A single team cannot repeat the same `recommended_experts[].slug`.
 - Every recommended member needs `role` and `reason`.
 - `languages_supported` and `channels_supported` must be non-empty arrays.
 
@@ -71,6 +78,8 @@ POST /api/team-templates
 
 - `GET /api/team-templates`
 - `POST /api/team-templates/preview`
+- `POST /api/team-templates/preview` rejects duplicate team members.
+- `POST /api/team-templates/preview` rejects unknown team members.
 - `POST /api/team-templates`
 - `GET /web/team-data.js`
 - `GET /team-data.js`

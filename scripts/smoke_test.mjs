@@ -129,6 +129,39 @@ try {
     `changes ${teamPreview.json.diff?.total_changes ?? "n/a"}`
   );
 
+  const duplicateMemberTemplates = structuredClone(teamTemplates.json.team_templates);
+  duplicateMemberTemplates[0].recommended_experts = [
+    ...duplicateMemberTemplates[0].recommended_experts,
+    { ...duplicateMemberTemplates[0].recommended_experts[0] },
+  ];
+  const duplicateMemberPreview = await fetchJson("/api/team-templates/preview", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ team_templates: duplicateMemberTemplates }),
+  });
+  record(
+    "POST /api/team-templates/preview rejects duplicate members",
+    duplicateMemberPreview.response.status === 422 &&
+      duplicateMemberPreview.json.ok === false &&
+      duplicateMemberPreview.json.errors.some((error) => error.includes("duplicate recommended expert slug")),
+    `status ${duplicateMemberPreview.response.status}`
+  );
+
+  const unknownMemberTemplates = structuredClone(teamTemplates.json.team_templates);
+  unknownMemberTemplates[0].recommended_experts[0].slug = "unknown-expert";
+  const unknownMemberPreview = await fetchJson("/api/team-templates/preview", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ team_templates: unknownMemberTemplates }),
+  });
+  record(
+    "POST /api/team-templates/preview rejects unknown members",
+    unknownMemberPreview.response.status === 422 &&
+      unknownMemberPreview.json.ok === false &&
+      unknownMemberPreview.json.errors.some((error) => error.includes("unknown expert slug")),
+    `status ${unknownMemberPreview.response.status}`
+  );
+
   const teamSave = await fetchJson("/api/team-templates", {
     method: "POST",
     headers: { "content-type": "application/json" },

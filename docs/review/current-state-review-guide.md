@@ -101,6 +101,12 @@ Team template source of truth:
 data/team-templates/alanclaw-team-templates.json
 ```
 
+Team template shape reference:
+
+```text
+schemas/team-template.schema.json
+```
+
 Check:
 
 - Expert slugs are stable kebab-case.
@@ -108,6 +114,7 @@ Check:
 - Required text fields are non-empty.
 - Array fields are real arrays in JSON.
 - Team templates reference existing expert slugs.
+- Team templates do not repeat the same recommended expert inside one team.
 - Team template roles are concrete, not vague.
 
 ## API Review Checklist
@@ -137,7 +144,6 @@ Review focus:
 ## Known Gaps
 
 - Team templates are editable in Admin v1, but there are no create/delete controls yet.
-- There is no schema file for team templates yet.
 - There is no database, auth, user account, or deployment pipeline.
 - The Web app uses local browser storage for My Experts.
 - The local Admin service writes directly to repo files.
