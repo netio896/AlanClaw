@@ -1,0 +1,11 @@
+{
+  "name": "alanclaw",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node apps/admin/server.mjs",
+    "generate": "node scripts/generate_expert_catalog.mjs",
+    "smoke": "node scripts/smoke_test.mjs"
+  }
+}

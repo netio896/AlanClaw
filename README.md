@@ -1,29 +1,60 @@
 # AlanClaw
 
-AlanClaw 是一个面向缅甸市场的 AI Agent 产品仓库，当前阶段先交付专家广场内容底座，包括专家导入包、分类体系、产品说明和后续前后台消费契约。
+AlanClaw 是一个面向缅甸市场的 AI Agent 产品仓库。当前版本已经包含专家广场 Web 原型、本地专家管理台、18 位专家目录，以及本地可写的专家内容生成链路。
 
-AlanClaw is a Myanmar-focused AI agent product repository. This first version ships the expert marketplace content foundation, import assets, and repo contracts for future web and admin apps.
+AlanClaw is a Myanmar-focused AI agent product repository with a local expert marketplace prototype, admin tool, and catalog generation workflow.
 
-## 当前交付物
+## Quick Start
 
-- `data/experts/alanclaw-experts.csv`：后台可直接导入的专家平面表
-- `data/experts/alanclaw-experts.json`：结构化专家清单
-- `content/experts/`：18 个专家的详情 Markdown 源文件
-- `schemas/expert-entry.schema.json`：单个专家条目 schema
-- `docs/`：产品定位、分类、导入规则、仓库布局说明
+```powershell
+npm run dev
+```
 
-## 仓库目标
+打开：
 
-- 作为 AlanClaw 专家广场的内容源
-- 为未来 `apps/web` 专家广场和 `apps/admin` 内容后台提供统一输入
-- 为后续专家扩充、翻译、本地化和版本维护提供可审计结构
+- Admin 管理台: [http://127.0.0.1:4176/](http://127.0.0.1:4176/)
+- Web 专家广场: [http://127.0.0.1:4176/web/index.html](http://127.0.0.1:4176/web/index.html)
 
-## 未来应用区域
+## Commands
 
-- `apps/web`：公开专家广场、专家详情、搜索与筛选
-- `apps/admin`：专家录入、编辑、审核、批量导入导出
-- `packages/expert-catalog`：共享数据加载、校验、转换和发布契约
+```powershell
+npm run dev
+npm run generate
+npm run smoke
+```
 
-## v1 范围
+- `npm run dev` 启动本地 admin 服务，并同时托管 Web 原型。
+- `npm run generate` 从 `data/experts/alanclaw-experts.json` 重新生成 CSV、Markdown、Web 数据和 Admin 数据。
+- `npm run smoke` 启动临时服务并检查关键页面、API 和保存链路。
 
-当前不包含可执行前端或后台应用代码，只包含产品内容底座和未来集成约束。
+## Current Deliverables
+
+- `apps/web/`: 移动端优先的专家广场原型。
+- `apps/admin/`: 本地专家管理台，支持读取、编辑预览、校验和保存。
+- `data/experts/alanclaw-experts.json`: 专家目录唯一源文件。
+- `data/experts/alanclaw-experts.csv`: 后台导入用平面表。
+- `content/experts/`: 18 位专家的 Markdown 详情文件。
+- `schemas/expert-entry.schema.json`: 单个专家条目的 JSON schema。
+- `scripts/generate_expert_catalog.mjs`: 专家目录生成器。
+- `scripts/smoke_test.mjs`: 本地验收脚本。
+
+## Save Flow
+
+Admin 管理台保存后会写回：
+
+```text
+data/experts/alanclaw-experts.json
+```
+
+然后重新生成：
+
+```text
+data/experts/alanclaw-experts.csv
+apps/web/expert-data.js
+apps/admin/expert-data.js
+content/experts/*.md
+```
+
+## Scope
+
+当前是本地开发产品包，不包含登录、权限、数据库或云部署。下一阶段可以继续做真实导入、版本历史、专家发布状态和部署流水线。
