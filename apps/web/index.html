@@ -16,12 +16,46 @@
         <button class="ghost-icon" id="headerAction" type="button" aria-label="查看更多">...</button>
       </header>
 
+      <section class="notice-banner hidden" id="teamNotice" aria-live="polite">
+        <div>
+          <strong id="teamNoticeTitle">已添加到我的专家</strong>
+          <p id="teamNoticeText">这套团队的专家已经加入你的工作区。</p>
+        </div>
+        <div class="notice-actions">
+          <button type="button" class="secondary-button" id="teamNoticeDismiss">稍后再看</button>
+          <button type="button" class="primary-button" id="teamNoticeView">去查看</button>
+        </div>
+      </section>
+
       <main class="screen screen-active" id="screen-experts" data-screen="experts">
+        <label class="search-bar search-bar-prominent">
+          <span>🔍</span>
+          <input id="searchInput" type="search" placeholder="搜索专家、行业团队、业务场景" />
+        </label>
+
+        <section class="guide-panel">
+          <p class="eyebrow">How To Start</p>
+          <div class="guide-steps">
+            <article>
+              <strong>第一步</strong>
+              <p>选择行业团队，按业务场景进入。</p>
+            </article>
+            <article>
+              <strong>第二步</strong>
+              <p>点击添加推荐团队，把整套专家加入工作区。</p>
+            </article>
+            <article>
+              <strong>第三步</strong>
+              <p>到“我的专家”查看已添加的专家。</p>
+            </article>
+          </div>
+        </section>
+
         <section class="hero-panel">
           <div>
-            <p class="hero-kicker">专家广场</p>
-            <h2>为缅甸业务场景准备的可执行专家库</h2>
-            <p class="hero-copy">先从销售、客服、内容、文档和运营场景切入，快速找到能直接上手的 Agent 模板。</p>
+            <p class="hero-kicker">业务场景优先</p>
+            <h2>先选行业团队，再补专家能力</h2>
+            <p class="hero-copy">面向缅甸销售、客服、文档、项目协同和内容运营，把常用 Agent 组合成可直接添加的工作团队。</p>
           </div>
           <div class="hero-stats">
             <div>
@@ -30,20 +64,15 @@
             </div>
             <div>
               <strong id="featuredCount">0</strong>
-              <span>精选</span>
+              <span>行业团队</span>
             </div>
           </div>
         </section>
 
-        <section class="mode-switch" id="marketModeSwitch">
-          <button type="button" class="mode-button mode-button-active" data-market-mode="experts">专家广场</button>
-          <button type="button" class="mode-button" data-market-mode="teams">行业团队</button>
+        <section class="quick-action-row">
+          <button type="button" class="primary-button" data-featured-team-action>+ 添加推荐团队</button>
+          <span>推荐从行业团队开始，也可以直接按专家能力浏览。</span>
         </section>
-
-        <label class="search-bar">
-          <span>⌕</span>
-          <input id="searchInput" type="search" placeholder="搜索专家、分类或标签" />
-        </label>
 
         <section class="segment-group">
           <div class="segmented-control" id="feedTabs"></div>
@@ -52,22 +81,15 @@
 
         <section class="section-title">
           <div>
-            <p class="eyebrow">精选推荐</p>
-            <h3 id="listHeading">推荐专家</h3>
+            <p class="eyebrow" id="listEyebrow">精选推荐</p>
+            <h3 id="listHeading">推荐行业团队</h3>
           </div>
           <span id="resultMeta" class="meta-pill"></span>
         </section>
 
         <section class="card-list" id="expertList"></section>
 
-        <section class="team-market hidden" id="teamMarket">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">Industry Agent Teams</p>
-              <h3>行业 Agent Team 模板</h3>
-            </div>
-            <span id="teamMeta" class="meta-pill"></span>
-          </div>
+        <section class="team-market" id="teamMarket">
           <div class="team-list" id="teamList"></div>
         </section>
       </main>
@@ -218,6 +240,9 @@
         <section class="detail-section">
           <h3>适用场景</h3>
           <div class="detail-meta" id="teamUseCases"></div>
+        </section>
+        <section class="detail-section detail-tip">
+          <p>这是为该行业预设的一组专家组合，可以整套添加，也可以单独添加专家。</p>
         </section>
         <section class="detail-section">
           <h3>推荐成员</h3>

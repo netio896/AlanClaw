@@ -47,6 +47,20 @@ const elements = {
   diffList: document.getElementById("diffList"),
 };
 
+const workspaceTabs = [...document.querySelectorAll("[data-admin-workspace]")];
+const workspacePanels = [...document.querySelectorAll("[data-workspace-panel]")];
+
+function setWorkspace(workspace) {
+  workspaceTabs.forEach((tab) => {
+    const active = tab.dataset.adminWorkspace === workspace;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", String(active));
+  });
+  workspacePanels.forEach((panel) => {
+    panel.classList.toggle("active", panel.dataset.workspacePanel === workspace);
+  });
+}
+
 const editableFields = [
   "fieldTitle",
   "fieldCategory",
@@ -602,6 +616,12 @@ function downloadFile(filename, content, type) {
 }
 
 document.addEventListener("click", (event) => {
+  const workspaceButton = event.target.closest("[data-admin-workspace]");
+  if (workspaceButton) {
+    setWorkspace(workspaceButton.dataset.adminWorkspace);
+    return;
+  }
+
   const target = event.target.closest("[data-category], [data-slug]");
   if (!target) return;
 

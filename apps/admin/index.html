@@ -21,7 +21,12 @@
 
       <section class="summary-grid" id="summaryGrid"></section>
 
-      <main class="workspace">
+      <nav class="workspace-switch" aria-label="Admin workspace">
+        <button type="button" class="workspace-tab active" data-admin-workspace="experts">专家目录</button>
+        <button type="button" class="workspace-tab" data-admin-workspace="teams">行业团队</button>
+      </nav>
+
+      <main class="workspace workspace-shell active" id="expertsWorkspace" data-workspace-panel="experts">
         <aside class="panel list-panel">
           <div class="panel-header">
             <div>
@@ -49,6 +54,10 @@
               <button type="button" class="primary-button" id="saveButton">保存到本地</button>
             </div>
           </div>
+          <section class="admin-guide">
+            <h3>怎么用</h3>
+            <p>先从左侧选择专家，再修改中间字段，最后查看右侧校验和 diff，确认后保存到本地。</p>
+          </section>
           <p class="save-status neutral" id="saveStatus">正在连接本地服务</p>
 
           <div class="form-grid">
@@ -148,7 +157,7 @@
         </aside>
       </main>
 
-      <section class="team-editor-block">
+      <section class="team-editor-block workspace-shell" id="teamsWorkspace" data-workspace-panel="teams">
         <div class="panel-header">
           <div>
             <p class="eyebrow">Industry Teams</p>
@@ -159,6 +168,16 @@
             <button type="button" class="primary-button" id="saveTeamButton">保存团队模板</button>
           </div>
         </div>
+        <section class="admin-guide admin-guide-steps">
+          <h3>Team Template Editor 怎么用</h3>
+          <div class="guide-list">
+            <p>1. 选择团队模板</p>
+            <p>2. 修改团队信息或推荐专家</p>
+            <p>3. 查看右侧校验和 diff</p>
+            <p>4. 保存到本地</p>
+            <p>5. 回到 Web 刷新查看效果</p>
+          </div>
+        </section>
         <p class="save-status neutral" id="teamSaveStatus">等待团队模板服务连接</p>
 
         <main class="workspace team-workspace">

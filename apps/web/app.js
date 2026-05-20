@@ -18,14 +18,14 @@ const fileRecommendationSlugs = [
 
 const state = {
   screen: "experts",
-  marketMode: "experts",
-  feed: "recommended",
+  browseView: "teams",
   category: "全部",
   libraryCategory: "全部",
   search: "",
   selectedExpert: null,
   selectedTeam: null,
   savedSlugs: loadSavedSlugs(),
+  teamNotice: null,
 };
 
 const elements = {
@@ -35,14 +35,18 @@ const elements = {
   categoryChips: document.getElementById("categoryChips"),
   libraryChips: document.getElementById("libraryChips"),
   searchInput: document.getElementById("searchInput"),
+  teamNotice: document.getElementById("teamNotice"),
+  teamNoticeTitle: document.getElementById("teamNoticeTitle"),
+  teamNoticeText: document.getElementById("teamNoticeText"),
+  teamNoticeDismiss: document.getElementById("teamNoticeDismiss"),
+  teamNoticeView: document.getElementById("teamNoticeView"),
   expertList: document.getElementById("expertList"),
-  marketModeSwitch: document.getElementById("marketModeSwitch"),
   expertSearchBar: document.querySelector(".search-bar"),
   expertControls: document.querySelector(".segment-group"),
   expertSectionTitle: document.getElementById("expertList").previousElementSibling,
+  listEyebrow: document.getElementById("listEyebrow"),
   teamMarket: document.getElementById("teamMarket"),
   teamList: document.getElementById("teamList"),
-  teamMeta: document.getElementById("teamMeta"),
   myExpertList: document.getElementById("myExpertList"),
   listHeading: document.getElementById("listHeading"),
   resultMeta: document.getElementById("resultMeta"),
@@ -73,10 +77,11 @@ const elements = {
   closeTeamControls: Array.from(document.querySelectorAll("[data-close-team]")),
 };
 
-const feedOptions = [
-  { key: "recommended", label: "推荐" },
-  { key: "hot", label: "热门" },
-  { key: "latest", label: "最新" },
+const browseOptions = [
+  { key: "teams", label: "推荐行业团队" },
+  { key: "recommended", label: "推荐专家" },
+  { key: "hot", label: "热门精选" },
+  { key: "latest", label: "最新发布" },
 ];
 const categories = ["全部", ...new Set(experts.map((expert) => expert.category))];
 
@@ -122,18 +127,34 @@ function teamExpertSlugs(team) {
 }
 
 function addTeam(slugs) {
+  const before = state.savedSlugs.length;
   state.savedSlugs = [...new Set([...state.savedSlugs, ...slugs])];
   persistSavedSlugs();
+  const addedCount = state.savedSlugs.length - before;
+  const teamTitle = state.selectedTeam?.title ?? "推荐团队";
+  state.teamNotice = {
+    title: addedCount > 0 ? "已添加到我的专家" : "这套团队已在我的专家中",
+    text:
+      addedCount > 0
+        ? `${teamTitle} 已加入工作区，共包含 ${slugs.length} 位专家。`
+        : `${teamTitle} 的成员之前已经全部加入你的工作区。`,
+  };
+  closeTeam();
   render();
   updateTeamButton();
 }
 
-function getFeedExperts() {
-  if (state.feed === "recommended") {
+function dismissTeamNotice() {
+  state.teamNotice = null;
+  renderTeamNotice();
+}
+
+function getBrowseExperts() {
+  if (state.browseView === "recommended") {
     return experts.filter((expert) => expert.featured);
   }
 
-  if (state.feed === "hot") {
+  if (state.browseView === "hot") {
     return hotSlugs.map((slug) => experts.find((expert) => expert.slug === slug)).filter(Boolean);
   }
 
@@ -152,12 +173,12 @@ function applyFilters(list, category, search) {
 }
 
 function renderFeedTabs() {
-  elements.feedTabs.innerHTML = feedOptions
+  elements.feedTabs.innerHTML = browseOptions
     .map(
       (option) => `
         <button type="button" class="segment-button ${
-          state.feed === option.key ? "segment-button-active" : ""
-        }" data-feed="${option.key}">
+          state.browseView === option.key ? "segment-button-active" : ""
+        }" data-browse-view="${option.key}">
           ${option.label}
         </button>`
     )
@@ -177,11 +198,16 @@ function renderChips(target, activeCategory, attrName) {
 
 function buildExpertCard(expert) {
   const saved = isSaved(expert.slug);
+  const isHot = hotSlugs.includes(expert.slug);
   return `
     <article class="expert-card">
       <header>
         <div>
-          ${expert.featured ? '<span class="featured-badge">精选</span>' : ""}
+          <div class="card-badge-row">
+            ${expert.featured ? '<span class="featured-badge">推荐</span>' : ""}
+            ${isHot ? '<span class="featured-badge hot-badge">热门</span>' : ""}
+            <span class="featured-badge quiet-badge">${escapeHtml(expert.category)}</span>
+          </div>
           <h3>${escapeHtml(expert.title)}</h3>
           <p>${escapeHtml(expert.card_summary)}</p>
         </div>
@@ -191,8 +217,8 @@ function buildExpertCard(expert) {
       </header>
       <footer>
         <div class="expert-meta">
-          <span>${escapeHtml(expert.category)}</span>
           <span>${escapeHtml(expert.languages_supported.join(" / "))}</span>
+          <span>${escapeHtml(expert.channels_supported.join(" / "))}</span>
         </div>
         <button type="button" class="ghost-icon" data-open-slug="${escapeHtml(expert.slug)}" aria-label="查看详情">→</button>
       </footer>
@@ -205,7 +231,10 @@ function buildTeamCard(team) {
   return `
     <article class="team-card">
       <div>
-        <span class="featured-badge">${escapeHtml(team.industry)}</span>
+        <div class="card-badge-row">
+          <span class="featured-badge">团队</span>
+          <span class="featured-badge quiet-badge">${escapeHtml(team.industry)}</span>
+        </div>
         <h3>${escapeHtml(team.title)}</h3>
         <p>${escapeHtml(team.card_summary)}</p>
       </div>
@@ -213,20 +242,24 @@ function buildTeamCard(team) {
         <span>${memberCount} 位成员</span>
         <span>${escapeHtml(team.channels_supported.join(" / "))}</span>
       </div>
+      <div class="use-case-row">
+        ${team.use_cases.slice(0, 3).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
+      </div>
       <button type="button" class="primary-button" data-open-team="${escapeHtml(team.slug)}">查看团队</button>
     </article>
   `;
 }
 
 function renderExpertList() {
-  const filtered = applyFilters(getFeedExperts(), state.category, state.search);
+  const filtered = applyFilters(getBrowseExperts(), state.category, state.search);
   const headingMap = {
     recommended: "推荐专家",
     hot: "热门专家",
     latest: "最新上架",
   };
 
-  elements.listHeading.textContent = headingMap[state.feed];
+  elements.listEyebrow.textContent = state.browseView === "latest" ? "Latest Agents" : "Expert Cards";
+  elements.listHeading.textContent = headingMap[state.browseView];
   elements.resultMeta.textContent = `${filtered.length} 个结果`;
   elements.expertList.innerHTML = filtered.length
     ? filtered.map(buildExpertCard).join("")
@@ -234,19 +267,39 @@ function renderExpertList() {
 }
 
 function renderTeamMarket() {
-  elements.teamMeta.textContent = `${teamTemplates.length} 套模板`;
-  elements.teamList.innerHTML = teamTemplates.map(buildTeamCard).join("");
+  const keyword = state.search.trim().toLowerCase();
+  const filtered = teamTemplates.filter((team) => {
+    const memberExperts = teamExpertSlugs(team)
+      .map((slug) => experts.find((expert) => expert.slug === slug))
+      .filter(Boolean);
+    const categoryPass = state.category === "全部" || memberExperts.some((expert) => expert.category === state.category);
+    const text = [
+      team.title,
+      team.industry,
+      team.card_summary,
+      ...team.use_cases,
+      ...team.languages_supported,
+      ...team.channels_supported,
+    ]
+      .join(" ")
+      .toLowerCase();
+    return categoryPass && (!keyword || text.includes(keyword));
+  });
+
+  elements.listEyebrow.textContent = "Industry Agent Teams";
+  elements.listHeading.textContent = "推荐行业团队";
+  elements.resultMeta.textContent = `${filtered.length} 套模板`;
+  elements.teamList.innerHTML = filtered.length
+    ? filtered.map(buildTeamCard).join("")
+    : `<div class="empty-state"><h3>没有匹配的团队</h3><p>试试切回全部分类，或搜索销售、客服、内容、项目等业务场景。</p></div>`;
 }
 
-function renderMarketMode() {
-  const isTeams = state.marketMode === "teams";
-  elements.expertSearchBar.classList.toggle("hidden", isTeams);
-  elements.expertControls.classList.toggle("hidden", isTeams);
-  elements.expertSectionTitle.classList.toggle("hidden", isTeams);
+function renderBrowseView() {
+  const isTeams = state.browseView === "teams";
   elements.expertList.classList.toggle("hidden", isTeams);
   elements.teamMarket.classList.toggle("hidden", !isTeams);
-  elements.marketModeSwitch.querySelectorAll("[data-market-mode]").forEach((button) => {
-    button.classList.toggle("mode-button-active", button.dataset.marketMode === state.marketMode);
+  elements.feedTabs.querySelectorAll("[data-browse-view]").forEach((button) => {
+    button.classList.toggle("segment-button-active", button.dataset.browseView === state.browseView);
   });
 }
 
@@ -283,6 +336,14 @@ function renderScreens() {
   elements.navItems.forEach((item) => {
     item.classList.toggle("nav-item-active", item.dataset.screenTarget === state.screen);
   });
+}
+
+function renderTeamNotice() {
+  const notice = state.teamNotice;
+  elements.teamNotice.classList.toggle("hidden", !notice);
+  if (!notice) return;
+  elements.teamNoticeTitle.textContent = notice.title;
+  elements.teamNoticeText.textContent = notice.text;
 }
 
 function updateSummaryStats() {
@@ -361,12 +422,13 @@ function updateTeamButton() {
 
 function render() {
   updateSummaryStats();
+  renderTeamNotice();
   renderFeedTabs();
   renderChips(elements.categoryChips, state.category, "data-category");
   renderChips(elements.libraryChips, state.libraryCategory, "data-library-category");
   renderExpertList();
   renderTeamMarket();
-  renderMarketMode();
+  renderBrowseView();
   renderLibrary();
   renderFileRecommendations();
   renderScreens();
@@ -374,18 +436,12 @@ function render() {
 
 document.addEventListener("click", (event) => {
   const target = event.target.closest(
-    "[data-market-mode], [data-feed], [data-category], [data-library-category], [data-open-slug], [data-open-team], [data-save-slug], [data-screen-target], [data-jump-screen]"
+    "[data-browse-view], [data-category], [data-library-category], [data-open-slug], [data-open-team], [data-save-slug], [data-screen-target], [data-jump-screen], [data-featured-team-action]"
   );
   if (!target) return;
 
-  if (target.dataset.marketMode) {
-    state.marketMode = target.dataset.marketMode;
-    render();
-    return;
-  }
-
-  if (target.dataset.feed) {
-    state.feed = target.dataset.feed;
+  if (target.dataset.browseView) {
+    state.browseView = target.dataset.browseView;
     render();
     return;
   }
@@ -426,6 +482,12 @@ document.addEventListener("click", (event) => {
   if (target.dataset.jumpScreen) {
     state.screen = target.dataset.jumpScreen;
     render();
+    return;
+  }
+
+  if ("featuredTeamAction" in target.dataset) {
+    const featuredTeam = teamTemplates.find((team) => team.featured) ?? teamTemplates[0];
+    if (featuredTeam) addTeam(teamExpertSlugs(featuredTeam));
   }
 });
 
@@ -439,7 +501,7 @@ elements.closeTeamControls.forEach((control) => {
 
 elements.searchInput.addEventListener("input", (event) => {
   state.search = event.target.value;
-  renderExpertList();
+  render();
 });
 
 elements.detailAddButton.addEventListener("click", () => {
@@ -452,6 +514,13 @@ elements.teamAddButton.addEventListener("click", () => {
   if (state.selectedTeam) {
     addTeam(teamExpertSlugs(state.selectedTeam));
   }
+});
+
+elements.teamNoticeDismiss.addEventListener("click", dismissTeamNotice);
+elements.teamNoticeView.addEventListener("click", () => {
+  state.screen = "library";
+  dismissTeamNotice();
+  render();
 });
 
 render();
