@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlanClaw Admin</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Catalog Admin</p>
+          <h1>AlanClaw 专家管理台</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="status-pill" id="catalogStatus">检查中</span>
+          <a class="ghost-link" href="../web/index.html">查看 Web 原型</a>
+        </div>
+      </header>
+
+      <section class="summary-grid" id="summaryGrid"></section>
+
+      <main class="workspace">
+        <aside class="panel list-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Experts</p>
+              <h2>专家列表</h2>
+            </div>
+            <span class="count-pill" id="listCount">0</span>
+          </div>
+          <label class="search-control">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="搜索标题、分类或标签" />
+          </label>
+          <div class="chip-row" id="categoryFilters"></div>
+          <div class="expert-list" id="expertList"></div>
+        </aside>
+
+        <section class="panel editor-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Edit Preview</p>
+              <h2 id="editorTitle">选择一个专家</h2>
+            </div>
+            <span class="status-pill neutral">预览模式</span>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>标题</span>
+              <input id="fieldTitle" type="text" />
+            </label>
+            <label>
+              <span>分类</span>
+              <input id="fieldCategory" type="text" />
+            </label>
+            <label>
+              <span>Slug</span>
+              <input id="fieldSlug" type="text" readonly />
+            </label>
+            <label>
+              <span>排序</span>
+              <input id="fieldSortOrder" type="number" />
+            </label>
+            <label class="wide">
+              <span>卡片简介</span>
+              <textarea id="fieldSummary" rows="3"></textarea>
+            </label>
+            <label class="wide">
+              <span>关于我</span>
+              <textarea id="fieldAbout" rows="5"></textarea>
+            </label>
+            <label class="wide">
+              <span>系统提示词</span>
+              <textarea id="fieldPrompt" rows="9"></textarea>
+            </label>
+          </div>
+
+          <div class="preview-card">
+            <div>
+              <span class="featured-badge" id="previewFeatured">精选</span>
+              <h3 id="previewTitle">未选择专家</h3>
+              <p id="previewSummary">从左侧选择一位专家后，这里会显示专家广场卡片预览。</p>
+            </div>
+            <button type="button" class="primary-button">添加</button>
+          </div>
+        </section>
+
+        <aside class="panel validation-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Validation</p>
+              <h2>导入校验</h2>
+            </div>
+          </div>
+
+          <section class="import-box">
+            <h3>导入入口</h3>
+            <p>第一版只展示导入 UI，不写回文件。真实保存会在后续通过本地服务接入。</p>
+            <div class="import-buttons">
+              <button type="button">CSV</button>
+              <button type="button">JSON</button>
+              <button type="button">Markdown</button>
+            </div>
+          </section>
+
+          <section class="check-list" id="validationList"></section>
+
+          <section class="metadata-box">
+            <h3>当前记录</h3>
+            <dl id="recordMeta"></dl>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./expert-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
+

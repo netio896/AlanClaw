@@ -1,11 +1,17 @@
 # apps/admin
 
-这里预留 AlanClaw 内部专家管理后台。
+AlanClaw expert catalog management prototype.
 
-未来职责：
+This is a local, static admin surface for reviewing the v1 expert catalog before a real backend exists.
 
-- 录入专家
-- 编辑专家
-- 校验导入包
-- 管理分类、标签、精选位和排序
-- 导出 CSV / JSON / Markdown
+## Files
+
+- `index.html` renders the admin shell.
+- `styles.css` defines the desktop-first management UI with mobile fallbacks.
+- `app.js` handles search, filtering, editor preview, and validation summaries.
+- `expert-data.js` is generated from `scripts/generate_expert_catalog.mjs`.
+
+## Scope
+
+The prototype can inspect and validate the catalog, but it does not write changes back to disk. Real save/import/export behavior should be added later through a small local Node service or a proper admin backend.
+

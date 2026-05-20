@@ -5,6 +5,7 @@ const root = "C:/Users/Nelson-AI/Documents/AlanClaw";
 const dataDir = path.join(root, "data", "experts");
 const contentDir = path.join(root, "content", "experts");
 const webDir = path.join(root, "apps", "web");
+const adminDir = path.join(root, "apps", "admin");
 
 const experts = [
   {
@@ -666,6 +667,10 @@ writeText(path.join(dataDir, "alanclaw-experts.csv"), `${csvHeader}\n${csvRows.j
 writeText(path.join(dataDir, "alanclaw-experts.json"), `${JSON.stringify(experts, null, 2)}\n`);
 writeText(
   path.join(webDir, "expert-data.js"),
+  `window.ALANCLAW_EXPERTS = ${JSON.stringify(experts, null, 2)};\n`
+);
+writeText(
+  path.join(adminDir, "expert-data.js"),
   `window.ALANCLAW_EXPERTS = ${JSON.stringify(experts, null, 2)};\n`
 );
 
