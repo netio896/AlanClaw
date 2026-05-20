@@ -43,6 +43,20 @@ h1, h2, h3, p { margin: 0; }
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.04);
 }
+.guide-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.guide-link-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 600;
+}
 .guide-steps {
   display: grid;
   gap: 10px;

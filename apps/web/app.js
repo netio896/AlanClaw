@@ -27,6 +27,7 @@ const state = {
   selectedTeam: null,
   savedSlugs: loadSavedSlugs(),
   onboardingDismissed: loadOnboardingDismissed(),
+  onboardingForced: false,
   onboardingTeamSlug: teamTemplates.find((team) => team.featured)?.slug ?? teamTemplates[0]?.slug ?? "",
   teamNotice: null,
 };
@@ -45,6 +46,7 @@ const elements = {
   onboardingOpenTeam: document.getElementById("onboardingOpenTeam"),
   onboardingAddTeam: document.getElementById("onboardingAddTeam"),
   onboardingDismiss: document.getElementById("onboardingDismiss"),
+  reopenOnboarding: document.getElementById("reopenOnboarding"),
   feedTabs: document.getElementById("feedTabs"),
   categoryChips: document.getElementById("categoryChips"),
   libraryChips: document.getElementById("libraryChips"),
@@ -157,7 +159,7 @@ function selectedOnboardingTeam() {
 }
 
 function shouldShowOnboarding() {
-  return !state.onboardingDismissed && state.savedSlugs.length === 0 && teamTemplates.length > 0;
+  return (state.onboardingForced || (!state.onboardingDismissed && state.savedSlugs.length === 0)) && teamTemplates.length > 0;
 }
 
 function addTeam(slugs, teamTitle = state.selectedTeam?.title ?? "推荐团队", options = {}) {
@@ -175,6 +177,7 @@ function addTeam(slugs, teamTitle = state.selectedTeam?.title ?? "推荐团队",
   };
   if (guideToLibrary) {
     state.screen = "library";
+    state.onboardingForced = false;
     state.onboardingDismissed = true;
     persistOnboardingDismissed();
   }
@@ -189,8 +192,16 @@ function dismissTeamNotice() {
 }
 
 function dismissOnboarding() {
+  state.onboardingForced = false;
   state.onboardingDismissed = true;
   persistOnboardingDismissed();
+  render();
+}
+
+function reopenOnboarding() {
+  state.screen = "experts";
+  state.onboardingForced = true;
+  state.onboardingTeamSlug = teamTemplates.find((team) => team.featured)?.slug ?? teamTemplates[0]?.slug ?? "";
   render();
 }
 
@@ -607,6 +618,7 @@ elements.onboardingAddTeam.addEventListener("click", () => {
 });
 
 elements.onboardingDismiss.addEventListener("click", dismissOnboarding);
+elements.reopenOnboarding.addEventListener("click", reopenOnboarding);
 
 elements.teamNoticeDismiss.addEventListener("click", dismissTeamNotice);
 elements.teamNoticeView.addEventListener("click", () => {
