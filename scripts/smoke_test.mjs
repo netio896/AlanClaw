@@ -84,6 +84,15 @@ try {
     `status ${teamData.response.status}`
   );
 
+  const adminTeamData = await fetchText("/team-data.js");
+  record(
+    "GET /team-data.js",
+    adminTeamData.response.status === 200 &&
+      adminTeamData.text.includes("window.ALANCLAW_TEAM_TEMPLATES") &&
+      adminTeamData.text.includes("construction-project-team"),
+    `status ${adminTeamData.response.status}`
+  );
+
   const exportJson = await fetchJson("/api/export/json");
   record(
     "GET /api/export/json",
@@ -107,6 +116,28 @@ try {
     "POST /api/import/preview",
     preview.response.status === 200 && preview.json.ok === true && preview.json.diff.total_changes === 0,
     `changes ${preview.json.diff?.total_changes ?? "n/a"}`
+  );
+
+  const teamPreview = await fetchJson("/api/team-templates/preview", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ team_templates: teamTemplates.json.team_templates }),
+  });
+  record(
+    "POST /api/team-templates/preview",
+    teamPreview.response.status === 200 && teamPreview.json.ok === true && teamPreview.json.diff.total_changes === 0,
+    `changes ${teamPreview.json.diff?.total_changes ?? "n/a"}`
+  );
+
+  const teamSave = await fetchJson("/api/team-templates", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ team_templates: teamTemplates.json.team_templates }),
+  });
+  record(
+    "POST /api/team-templates",
+    teamSave.response.status === 200 && teamSave.json.ok === true && teamSave.json.count === 3,
+    `status ${teamSave.response.status}`
   );
 
   const save = await fetchJson("/api/experts", {

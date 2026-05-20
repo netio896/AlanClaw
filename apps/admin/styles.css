@@ -75,6 +75,14 @@ h1, h2, h3, p { margin: 0; }
   grid-template-columns: minmax(270px, 320px) minmax(0, 1fr) minmax(290px, 340px);
   gap: 14px;
 }
+.team-editor-block {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.team-workspace {
+  margin-top: 14px;
+}
 .panel {
   min-height: 640px;
   padding: 16px;
@@ -85,6 +93,10 @@ h1, h2, h3, p { margin: 0; }
   margin-bottom: 14px;
 }
 .panel-header h2 { font-size: 18px; }
+.compact-header {
+  margin: 18px 0 12px;
+}
+.compact-header h3 { font-size: 16px; }
 
 .status-pill, .count-pill {
   display: inline-flex;
@@ -311,6 +323,30 @@ textarea { resize: vertical; line-height: 1.5; }
   font-size: 12px;
   line-height: 1.45;
 }
+.member-editor {
+  grid-column: 1 / -1;
+}
+.member-list {
+  display: grid;
+  gap: 10px;
+}
+.member-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+}
+.member-row .wide {
+  grid-column: 1 / 3;
+}
+.remove-member-button {
+  align-self: end;
+  white-space: nowrap;
+}
 .check-list { display: grid; gap: 8px; }
 .check-item {
   display: grid;
@@ -339,6 +375,8 @@ dd { margin: 0; font-size: 13px; word-break: break-word; }
   .workspace { grid-template-columns: 1fr; }
   .panel { min-height: auto; }
   .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .member-row { grid-template-columns: 1fr; }
+  .member-row .wide { grid-column: auto; }
 }
 
 @media (max-width: 640px) {

@@ -5,9 +5,12 @@ import { fileURLToPath } from "node:url";
 import {
   buildCsv,
   generateExpertCatalog,
+  generateTeamTemplates,
   loadExperts,
   loadTeamTemplates,
+  normalizeTeamTemplates,
   validateExperts,
+  validateTeamTemplates,
 } from "../../scripts/generate_expert_catalog.mjs";
 
 const adminDir = path.dirname(fileURLToPath(import.meta.url));
@@ -69,6 +72,54 @@ function diffExperts(baseExperts, nextExperts) {
   const modified = [];
 
   for (const next of nextExperts) {
+    const current = baseBySlug.get(next.slug);
+    if (!current) continue;
+
+    const changes = fields
+      .filter((field) => JSON.stringify(current[field]) !== JSON.stringify(next[field]))
+      .map((field) => ({
+        field,
+        before: current[field],
+        after: next[field],
+      }));
+
+    if (changes.length) {
+      modified.push({
+        slug: next.slug,
+        title: next.title,
+        changes,
+      });
+    }
+  }
+
+  return {
+    added,
+    removed,
+    modified,
+    total_changes: added.length + removed.length + modified.length,
+  };
+}
+
+function diffTeamTemplates(baseTemplates, nextTemplates) {
+  const baseBySlug = new Map(baseTemplates.map((team) => [team.slug, team]));
+  const nextBySlug = new Map(nextTemplates.map((team) => [team.slug, team]));
+  const fields = [
+    "title",
+    "industry",
+    "card_summary",
+    "use_cases",
+    "recommended_experts",
+    "languages_supported",
+    "channels_supported",
+    "featured",
+    "sort_order",
+  ];
+
+  const added = nextTemplates.filter((team) => !baseBySlug.has(team.slug)).map((team) => team.slug);
+  const removed = baseTemplates.filter((team) => !nextBySlug.has(team.slug)).map((team) => team.slug);
+  const modified = [];
+
+  for (const next of nextTemplates) {
     const current = baseBySlug.get(next.slug);
     if (!current) continue;
 
@@ -168,6 +219,67 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/team-templates") {
     const teamTemplates = loadTeamTemplates();
     sendJson(res, 200, { ok: true, count: teamTemplates.length, team_templates: teamTemplates });
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/team-templates/preview") {
+    let payload;
+    try {
+      payload = JSON.parse(await readRequestBody(req));
+    } catch (error) {
+      sendJson(res, 400, { ok: false, errors: [error.message] });
+      return;
+    }
+
+    const teamTemplates = Array.isArray(payload) ? payload : payload.team_templates;
+    const experts = loadExperts();
+    const inputErrors = validateTeamTemplates(teamTemplates, experts);
+    if (inputErrors.length) {
+      sendJson(res, 422, { ok: false, errors: inputErrors });
+      return;
+    }
+    const normalizedTeamTemplates = normalizeTeamTemplates(teamTemplates);
+    const errors = validateTeamTemplates(normalizedTeamTemplates, experts);
+    if (errors.length) {
+      sendJson(res, 422, { ok: false, errors });
+      return;
+    }
+
+    const currentTeamTemplates = normalizeTeamTemplates(loadTeamTemplates());
+    const diff = diffTeamTemplates(currentTeamTemplates, normalizedTeamTemplates);
+    sendJson(res, 200, { ok: true, count: normalizedTeamTemplates.length, diff, team_templates: normalizedTeamTemplates });
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/team-templates") {
+    let payload;
+    try {
+      payload = JSON.parse(await readRequestBody(req));
+    } catch (error) {
+      sendJson(res, 400, { ok: false, errors: [error.message] });
+      return;
+    }
+
+    const teamTemplates = Array.isArray(payload) ? payload : payload.team_templates;
+    const experts = loadExperts();
+    const inputErrors = validateTeamTemplates(teamTemplates, experts);
+    if (inputErrors.length) {
+      sendJson(res, 422, { ok: false, errors: inputErrors });
+      return;
+    }
+    const normalizedTeamTemplates = normalizeTeamTemplates(teamTemplates);
+    const errors = validateTeamTemplates(normalizedTeamTemplates, experts);
+    if (errors.length) {
+      sendJson(res, 422, { ok: false, errors });
+      return;
+    }
+
+    try {
+      const generated = generateTeamTemplates({ teamTemplates: normalizedTeamTemplates, experts });
+      sendJson(res, 200, { ok: true, count: generated.length, team_templates: generated });
+    } catch (error) {
+      sendJson(res, 500, { ok: false, errors: [error.message] });
+    }
     return;
   }
 

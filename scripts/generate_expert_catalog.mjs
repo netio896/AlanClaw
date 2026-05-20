@@ -53,6 +53,104 @@ export function loadTeamTemplates() {
   return JSON.parse(fs.readFileSync(teamTemplatesPath, "utf8"));
 }
 
+export function validateTeamTemplates(teamTemplates, experts = loadExperts()) {
+  const errors = [];
+  if (!Array.isArray(teamTemplates)) {
+    return ["Team templates must be a JSON array."];
+  }
+  if (teamTemplates.length === 0) {
+    errors.push("Team templates must contain at least one template.");
+  }
+
+  const expertSlugs = new Set(experts.map((expert) => expert.slug));
+  const slugs = [];
+  const sortOrders = [];
+
+  teamTemplates.forEach((team, index) => {
+    const ref = team?.slug || `team_templates[${index}]`;
+
+    for (const field of ["slug", "title", "industry", "card_summary"]) {
+      if (typeof team?.[field] !== "string" || !team[field].trim()) {
+        errors.push(`${ref} has empty ${field}`);
+      }
+    }
+
+    if (team?.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(team.slug)) {
+      errors.push(`${team.slug} has an invalid slug format`);
+    }
+
+    if (!Number.isInteger(Number(team?.sort_order))) {
+      errors.push(`${ref} has invalid sort_order`);
+    }
+
+    for (const field of ["use_cases", "languages_supported", "channels_supported"]) {
+      if (!Array.isArray(team?.[field]) || team[field].length === 0) {
+        errors.push(`${ref} has invalid ${field}`);
+      }
+    }
+
+    if (!Array.isArray(team?.recommended_experts) || team.recommended_experts.length === 0) {
+      errors.push(`${ref} has invalid recommended_experts`);
+    } else {
+      team.recommended_experts.forEach((member, memberIndex) => {
+        const memberRef = `${ref}.recommended_experts[${memberIndex}]`;
+        if (typeof member?.slug !== "string" || !member.slug.trim()) {
+          errors.push(`${memberRef} has empty slug`);
+        } else if (!expertSlugs.has(member.slug)) {
+          errors.push(`${memberRef} references unknown expert slug: ${member.slug}`);
+        }
+
+        for (const field of ["role", "reason"]) {
+          if (typeof member?.[field] !== "string" || !member[field].trim()) {
+            errors.push(`${memberRef} has empty ${field}`);
+          }
+        }
+      });
+    }
+
+    slugs.push(team?.slug);
+    sortOrders.push(Number(team?.sort_order));
+  });
+
+  for (const slug of uniqueDuplicateValues(slugs)) {
+    errors.push(`duplicate team template slug: ${slug}`);
+  }
+
+  for (const sortOrder of uniqueDuplicateValues(sortOrders)) {
+    errors.push(`duplicate team template sort_order: ${sortOrder}`);
+  }
+
+  return errors;
+}
+
+export function normalizeTeamTemplates(teamTemplates) {
+  return teamTemplates
+    .map((team) => ({
+      ...team,
+      slug: String(team.slug ?? "").trim(),
+      title: String(team.title ?? "").trim(),
+      industry: String(team.industry ?? "").trim(),
+      card_summary: String(team.card_summary ?? "").trim(),
+      use_cases: Array.isArray(team.use_cases) ? team.use_cases.map(String).map((item) => item.trim()).filter(Boolean) : [],
+      recommended_experts: Array.isArray(team.recommended_experts)
+        ? team.recommended_experts.map((member) => ({
+            slug: String(member.slug ?? "").trim(),
+            role: String(member.role ?? "").trim(),
+            reason: String(member.reason ?? "").trim(),
+          }))
+        : [],
+      languages_supported: Array.isArray(team.languages_supported)
+        ? team.languages_supported.map(String).map((item) => item.trim()).filter(Boolean)
+        : [],
+      channels_supported: Array.isArray(team.channels_supported)
+        ? team.channels_supported.map(String).map((item) => item.trim()).filter(Boolean)
+        : [],
+      featured: Boolean(team.featured),
+      sort_order: Number(team.sort_order),
+    }))
+    .sort((a, b) => a.sort_order - b.sort_order);
+}
+
 export function validateExperts(experts) {
   const errors = [];
   if (!Array.isArray(experts)) {
@@ -182,6 +280,13 @@ export function generateExpertCatalog({ experts = loadExperts() } = {}) {
     sort_order: Number(expert.sort_order),
     featured: Boolean(expert.featured),
   }));
+  const normalizedTeamTemplates = normalizeTeamTemplates(loadTeamTemplates());
+  const teamErrors = validateTeamTemplates(normalizedTeamTemplates, normalizedExperts);
+  if (teamErrors.length) {
+    const error = new Error(`Team template validation failed:\n${teamErrors.join("\n")}`);
+    error.validationErrors = teamErrors;
+    throw error;
+  }
 
   writeText(sourceJsonPath, `${JSON.stringify(normalizedExperts, null, 2)}\n`);
   writeText(path.join(dataDir, "alanclaw-experts.csv"), buildCsv(normalizedExperts));
@@ -195,11 +300,11 @@ export function generateExpertCatalog({ experts = loadExperts() } = {}) {
   );
   writeText(
     path.join(webDir, "team-data.js"),
-    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(loadTeamTemplates(), null, 2)};\n`
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(normalizedTeamTemplates, null, 2)};\n`
   );
   writeText(
     path.join(adminDir, "team-data.js"),
-    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(loadTeamTemplates(), null, 2)};\n`
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(normalizedTeamTemplates, null, 2)};\n`
   );
 
   for (const expert of normalizedExperts) {
@@ -207,6 +312,28 @@ export function generateExpertCatalog({ experts = loadExperts() } = {}) {
   }
 
   return normalizedExperts;
+}
+
+export function generateTeamTemplates({ teamTemplates = loadTeamTemplates(), experts = loadExperts() } = {}) {
+  const normalizedTeamTemplates = normalizeTeamTemplates(teamTemplates);
+  const errors = validateTeamTemplates(normalizedTeamTemplates, experts);
+  if (errors.length) {
+    const error = new Error(`Team template validation failed:\n${errors.join("\n")}`);
+    error.validationErrors = errors;
+    throw error;
+  }
+
+  writeText(teamTemplatesPath, `${JSON.stringify(normalizedTeamTemplates, null, 2)}\n`);
+  writeText(
+    path.join(webDir, "team-data.js"),
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(normalizedTeamTemplates, null, 2)};\n`
+  );
+  writeText(
+    path.join(adminDir, "team-data.js"),
+    `window.ALANCLAW_TEAM_TEMPLATES = ${JSON.stringify(normalizedTeamTemplates, null, 2)};\n`
+  );
+
+  return normalizedTeamTemplates;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

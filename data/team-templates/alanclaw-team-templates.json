@@ -47,8 +47,18 @@
         "reason": "跟踪缅甸材料、供应商、行业动态和本地风险信息。"
       }
     ],
-    "languages_supported": ["中文", "English", "မြန်မာ"],
-    "channels_supported": ["Telegram", "Email", "Web", "Excel", "PDF"],
+    "languages_supported": [
+      "中文",
+      "English",
+      "မြန်မာ"
+    ],
+    "channels_supported": [
+      "Telegram",
+      "Email",
+      "Web",
+      "Excel",
+      "PDF"
+    ],
     "featured": true,
     "sort_order": 1
   },
@@ -100,8 +110,17 @@
         "reason": "支持中文、英文、缅文客服场景。"
       }
     ],
-    "languages_supported": ["中文", "English", "မြန်မာ"],
-    "channels_supported": ["Facebook", "Telegram", "Messenger", "Email"],
+    "languages_supported": [
+      "中文",
+      "English",
+      "မြန်မာ"
+    ],
+    "channels_supported": [
+      "Facebook",
+      "Telegram",
+      "Messenger",
+      "Email"
+    ],
     "featured": true,
     "sort_order": 2
   },
@@ -148,8 +167,17 @@
         "reason": "把中文内容改写成英文或缅文表达。"
       }
     ],
-    "languages_supported": ["中文", "English", "မြန်မာ"],
-    "channels_supported": ["Facebook", "TikTok", "Telegram", "Web"],
+    "languages_supported": [
+      "中文",
+      "English",
+      "မြန်မာ"
+    ],
+    "channels_supported": [
+      "Facebook",
+      "TikTok",
+      "Telegram",
+      "Web"
+    ],
     "featured": true,
     "sort_order": 3
   }

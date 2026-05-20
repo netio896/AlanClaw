@@ -85,6 +85,7 @@ Web:   http://127.0.0.1:4176/web/index.html
 - Test import preview with a valid exported JSON or CSV.
 - Confirm validation blocks bad catalog shape.
 - Confirm team templates are visible in the right panel.
+- Confirm the Team Template Editor can edit template fields, member roles, validation, diff, and save.
 
 ## Data Review Checklist
 
@@ -121,6 +122,8 @@ GET  /api/export/json
 GET  /api/export/csv
 POST /api/import/preview
 GET  /api/team-templates
+POST /api/team-templates/preview
+POST /api/team-templates
 ```
 
 Review focus:
@@ -133,7 +136,7 @@ Review focus:
 
 ## Known Gaps
 
-- Team templates are not editable in Admin yet.
+- Team templates are editable in Admin v1, but there are no create/delete controls yet.
 - There is no schema file for team templates yet.
 - There is no database, auth, user account, or deployment pipeline.
 - The Web app uses local browser storage for My Experts.
@@ -155,4 +158,4 @@ Options:
 
 Current recommendation:
 
-Build the Admin Team Template Editor next, because it turns the new core product concept into manageable content instead of hardcoded JSON.
+After Admin Team Template Editor v1, the next useful step is either schema/test hardening or a guided industry onboarding flow.

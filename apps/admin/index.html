@@ -147,10 +147,113 @@
           </section>
         </aside>
       </main>
+
+      <section class="team-editor-block">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Industry Teams</p>
+            <h2>行业 Agent Team 模板编辑器</h2>
+          </div>
+          <div class="editor-actions">
+            <button type="button" class="secondary-button" id="reloadTeamButton">重新加载团队</button>
+            <button type="button" class="primary-button" id="saveTeamButton">保存团队模板</button>
+          </div>
+        </div>
+        <p class="save-status neutral" id="teamSaveStatus">等待团队模板服务连接</p>
+
+        <main class="workspace team-workspace">
+          <aside class="panel list-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Templates</p>
+                <h2>团队列表</h2>
+              </div>
+              <span class="count-pill" id="teamListCount">0</span>
+            </div>
+            <div class="expert-list" id="teamEditorList"></div>
+          </aside>
+
+          <section class="panel editor-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Team Editor</p>
+                <h2 id="teamEditorTitle">选择一个团队模板</h2>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>Title</span>
+                <input id="teamFieldTitle" type="text" />
+              </label>
+              <label>
+                <span>Industry</span>
+                <input id="teamFieldIndustry" type="text" />
+              </label>
+              <label>
+                <span>Slug</span>
+                <input id="teamFieldSlug" type="text" readonly />
+              </label>
+              <label>
+                <span>Sort order</span>
+                <input id="teamFieldSortOrder" type="number" />
+              </label>
+              <label class="wide">
+                <span>Card summary</span>
+                <textarea id="teamFieldSummary" rows="3"></textarea>
+              </label>
+              <label class="wide">
+                <span>Use cases，逗号或换行分隔</span>
+                <textarea id="teamFieldUseCases" rows="4"></textarea>
+              </label>
+              <label>
+                <span>Languages，逗号分隔</span>
+                <input id="teamFieldLanguages" type="text" />
+              </label>
+              <label>
+                <span>Channels，逗号分隔</span>
+                <input id="teamFieldChannels" type="text" />
+              </label>
+              <label class="toggle-row">
+                <span>Featured</span>
+                <input id="teamFieldFeatured" type="checkbox" />
+              </label>
+            </div>
+
+            <section class="member-editor">
+              <div class="panel-header compact-header">
+                <div>
+                  <p class="eyebrow">Members</p>
+                  <h3>推荐专家成员</h3>
+                </div>
+                <button type="button" class="secondary-button" id="addTeamMemberButton">添加成员</button>
+              </div>
+              <datalist id="expertSlugOptions"></datalist>
+              <div class="member-list" id="teamMemberEditorList"></div>
+            </section>
+          </section>
+
+          <aside class="panel validation-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Team Validation</p>
+                <h2>团队校验</h2>
+              </div>
+            </div>
+            <section class="diff-box">
+              <h3>保存前 Diff</h3>
+              <p class="diff-summary" id="teamDiffSummary">暂无变更。</p>
+              <div class="diff-list" id="teamDiffList"></div>
+            </section>
+            <section class="check-list" id="teamValidationList"></section>
+          </aside>
+        </main>
+      </section>
     </div>
 
     <script src="./expert-data.js"></script>
     <script src="./team-data.js"></script>
     <script src="./app.js"></script>
+    <script src="./team-editor.js"></script>
   </body>
 </html>
