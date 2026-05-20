@@ -27,6 +27,10 @@ npm run smoke
 - `npm run generate` 从 `data/experts/alanclaw-experts.json` 重新生成 CSV、Markdown、Web 数据和 Admin 数据。
 - `npm run smoke` 启动临时服务并检查关键页面、API 和保存链路。
 
+## Usage Guide
+
+- [Web and Admin 使用手册](docs/usage/admin-and-web-usage.md)
+
 ## Current Deliverables
 
 - `apps/web/`: 移动端优先的专家广场原型。
