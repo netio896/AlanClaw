@@ -403,11 +403,29 @@ function renderFileRecommendations() {
 
   elements.fileRecommendations.innerHTML = items
     .map(
-      (expert) => `
+      (expert) => {
+        const saved = isSaved(expert.slug);
+        return `
         <article class="mini-item">
-          <strong>${escapeHtml(expert.title)}</strong>
-          <p>${escapeHtml(expert.card_summary)}</p>
-        </article>`
+          <div>
+            <div class="card-badge-row">
+              <span class="featured-badge quiet-badge">${escapeHtml(expert.category)}</span>
+            </div>
+            <strong>${escapeHtml(expert.title)}</strong>
+            <p>${escapeHtml(expert.card_summary)}</p>
+            <div class="expert-meta">
+              <span>${escapeHtml(expert.languages_supported.join(" / "))}</span>
+              <span>${escapeHtml(expert.channels_supported.join(" / "))}</span>
+            </div>
+          </div>
+          <div class="mini-actions">
+            <button type="button" class="secondary-button" data-open-slug="${escapeHtml(expert.slug)}">查看详情</button>
+            <button type="button" class="card-action ${saved ? "saved" : ""}" data-save-slug="${escapeHtml(expert.slug)}">
+              ${saved ? "已添加" : "添加"}
+            </button>
+          </div>
+        </article>`;
+      }
     )
     .join("");
 }
