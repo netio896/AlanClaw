@@ -114,6 +114,16 @@ try {
   const experts = await fetchJson("/api/experts");
   record("GET /api/experts", experts.response.status === 200 && experts.json.count === 18, `count ${experts.json.count}`);
 
+  const executionMap = await fetchJson("/api/execution-map");
+  record(
+    "GET /api/execution-map",
+    executionMap.response.status === 200 &&
+      executionMap.json.ok === true &&
+      executionMap.json.count === 18 &&
+      executionMap.json.execution_map["excel-data-cleanup-expert"]?.skill_key === "xlsx",
+    `count ${executionMap.json.count ?? "n/a"}`
+  );
+
   const userSkillDirectoryReferences = findUserSkillDirectoryReferences(fileURLToPath(new URL("..", import.meta.url)));
   record(
     "Repository is isolated from user skill directories",
@@ -165,6 +175,9 @@ try {
   const adminButtonWiringOk =
     adminPage.text.includes('data-admin-workspace="experts"') &&
     adminPage.text.includes('data-admin-workspace="teams"') &&
+    adminPage.text.includes('id="executionRouteMeta"') &&
+    adminApp.text.includes('fetch("/api/execution-map")') &&
+    adminApp.text.includes("renderExecutionRoute(expert)") &&
     adminApp.text.includes('elements.saveButton.addEventListener("click", saveCatalog)') &&
     adminApp.text.includes('elements.reloadButton.addEventListener("click", loadFromApi)') &&
     adminApp.text.includes('elements.importButton.addEventListener("click"') &&

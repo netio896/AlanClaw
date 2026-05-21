@@ -15,6 +15,7 @@ import {
 
 const adminDir = path.dirname(fileURLToPath(import.meta.url));
 const webDir = path.resolve(adminDir, "..", "web");
+const rootDir = path.resolve(adminDir, "..", "..");
 const port = Number(process.env.PORT || 4176);
 const maxBodyBytes = 2_000_000;
 
@@ -49,6 +50,11 @@ function normalizeExperts(experts) {
     sort_order: Number(expert.sort_order),
     featured: Boolean(expert.featured),
   }));
+}
+
+async function loadExecutionMap() {
+  const mapPath = path.join(rootDir, "data", "execution", "expert-skill-map.json");
+  return JSON.parse(await fs.readFile(mapPath, "utf8"));
 }
 
 function diffExperts(baseExperts, nextExperts) {
@@ -219,6 +225,12 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/team-templates") {
     const teamTemplates = loadTeamTemplates();
     sendJson(res, 200, { ok: true, count: teamTemplates.length, team_templates: teamTemplates });
+    return;
+  }
+
+  if (req.method === "GET" && pathname === "/api/execution-map") {
+    const executionMap = await loadExecutionMap();
+    sendJson(res, 200, { ok: true, count: Object.keys(executionMap).length, execution_map: executionMap });
     return;
   }
 

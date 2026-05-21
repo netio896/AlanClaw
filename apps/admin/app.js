@@ -1,5 +1,6 @@
 let experts = Array.isArray(window.ALANCLAW_EXPERTS) ? structuredClone(window.ALANCLAW_EXPERTS) : [];
 let baselineExperts = structuredClone(experts);
+let executionMap = {};
 const teamTemplates = Array.isArray(window.ALANCLAW_TEAM_TEMPLATES) ? window.ALANCLAW_TEAM_TEMPLATES : [];
 
 const state = {
@@ -37,6 +38,7 @@ const elements = {
   previewSummary: document.getElementById("previewSummary"),
   validationList: document.getElementById("validationList"),
   recordMeta: document.getElementById("recordMeta"),
+  executionRouteMeta: document.getElementById("executionRouteMeta"),
   teamTemplateList: document.getElementById("teamTemplateList"),
   importButton: document.getElementById("importButton"),
   importFileInput: document.getElementById("importFileInput"),
@@ -330,6 +332,7 @@ function renderEditor() {
   elements.previewTitle.textContent = expert.title;
   elements.previewSummary.textContent = expert.card_summary;
   renderRecordMeta(expert);
+  renderExecutionRoute(expert);
 }
 
 function renderRecordMeta(expert) {
@@ -344,6 +347,24 @@ function renderRecordMeta(expert) {
   ];
 
   elements.recordMeta.innerHTML = rows.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd>`).join("");
+}
+
+function renderExecutionRoute(expert) {
+  const route = executionMap[expert.slug];
+  if (!route) {
+    elements.executionRouteMeta.innerHTML = "<dt>状态</dt><dd>未配置执行映射</dd>";
+    return;
+  }
+
+  const rows = [
+    ["skill_key", route.skill_key || "未配置"],
+    ["intent", route.intent || "未配置"],
+    ["status", route.status || "未配置"],
+    ["需要文件", route.requires_files ? "是" : "否"],
+    ["需要外部账号", route.requires_external_account ? "是" : "否"],
+  ];
+
+  elements.executionRouteMeta.innerHTML = rows.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd>`).join("");
 }
 
 function renderTeamTemplates() {
@@ -428,10 +449,13 @@ function updatePreviewFromFields() {
 
 async function loadFromApi() {
   try {
-    const response = await fetch("/api/experts");
-    if (!response.ok) throw new Error(`GET /api/experts ${response.status}`);
-    const payload = await response.json();
+    const [expertResponse, executionMapResponse] = await Promise.all([fetch("/api/experts"), fetch("/api/execution-map")]);
+    if (!expertResponse.ok) throw new Error(`GET /api/experts ${expertResponse.status}`);
+    if (!executionMapResponse.ok) throw new Error(`GET /api/execution-map ${executionMapResponse.status}`);
+    const payload = await expertResponse.json();
+    const executionMapPayload = await executionMapResponse.json();
     experts = normalizeCatalog(payload.experts);
+    executionMap = executionMapPayload.execution_map ?? {};
     baselineExperts = structuredClone(experts);
     state.apiAvailable = true;
     state.selectedSlug = experts.find((expert) => expert.slug === state.selectedSlug)?.slug ?? experts[0]?.slug ?? "";

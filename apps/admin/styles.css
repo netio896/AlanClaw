@@ -307,7 +307,7 @@ textarea { resize: vertical; line-height: 1.5; }
   padding: 14px;
   margin-bottom: 14px;
 }
-.import-box p, .diff-box p {
+.import-box p, .diff-box p, .metadata-note {
   margin: 8px 0 12px;
   color: var(--muted);
   line-height: 1.5;
