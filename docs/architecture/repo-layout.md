@@ -51,6 +51,10 @@
 - schema 校验
 - 转换为前台/后台所需视图模型
 
+### skills/
+
+未来 OpenClaw/QClaw 工作区级技能目录。当前仓库尚未启用该目录，集成边界见 `docs/architecture/openclaw-integration-notes.md`。
+
 ## 当前边界
 
 - 本次提交不包含可执行应用
