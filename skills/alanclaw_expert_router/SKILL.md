@@ -18,6 +18,7 @@ The router script reads from the AlanClaw repository root:
 
 - `data/experts/alanclaw-experts.json`
 - `data/execution/expert-skill-map.json`
+- `data/team-templates/alanclaw-team-templates.json`
 
 The mapping file is the execution boundary. Web/Admin still manage experts and team templates; this skill only answers which candidate skill and intent should handle a task.
 
@@ -41,6 +42,12 @@ List all mapped experts:
 node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --list --json
 ```
 
+Route one industry team:
+
+```powershell
+node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --team-slug construction-project-team --task "plan construction project follow-up" --files meeting-notes.docx,boq.xlsx --json
+```
+
 ## Output Contract
 
 The script returns JSON with:
@@ -48,7 +55,9 @@ The script returns JSON with:
 - `ok`
 - `execution_mode`
 - `expert`
+- `team`
 - `route`
+- `routes`
 - `warnings`
 - `next_step`
 

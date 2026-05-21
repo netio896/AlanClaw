@@ -160,6 +160,28 @@ try {
     `${routerPlanJson.route?.skill_key ?? "n/a"}/${routerPlanJson.route?.intent ?? "n/a"}`
   );
 
+  const teamRouterPlan = await runNodeScript([
+    "skills/alanclaw_expert_router/scripts/route-expert-task.mjs",
+    "--team-slug",
+    "construction-project-team",
+    "--task",
+    "plan construction project follow-up",
+    "--files",
+    "meeting-notes.docx,boq.xlsx",
+    "--json",
+  ]);
+  const teamRouterPlanJson = JSON.parse(teamRouterPlan.stdout);
+  record(
+    "AlanClaw expert router returns team plan",
+    teamRouterPlan.code === 0 &&
+      teamRouterPlanJson.ok === true &&
+      teamRouterPlanJson.execution_mode === "plan_only" &&
+      teamRouterPlanJson.team.slug === "construction-project-team" &&
+      teamRouterPlanJson.routes.length === 7 &&
+      teamRouterPlanJson.routes.some((route) => route.expert_slug === "project-followup-assistant"),
+    `members ${teamRouterPlanJson.routes?.length ?? "n/a"}`
+  );
+
   const teamTemplates = await fetchJson("/api/team-templates");
   record(
     "GET /api/team-templates",

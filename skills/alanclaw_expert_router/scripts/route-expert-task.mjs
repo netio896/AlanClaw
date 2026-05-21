@@ -24,6 +24,7 @@ function parseArgs(argv) {
     else if (arg === "--validate") args.validate = true;
     else if (arg === "--repo-root") args.repoRoot = path.resolve(argv[++index] ?? "");
     else if (arg === "--expert-slug") args.expertSlug = argv[++index];
+    else if (arg === "--team-slug") args.teamSlug = argv[++index];
     else if (arg === "--task") args.task = argv[++index];
     else if (arg === "--files") args.files = String(argv[++index] ?? "").split(",").map((item) => item.trim()).filter(Boolean);
     else if (arg === "--help" || arg === "-h") args.help = true;
@@ -40,15 +41,18 @@ function readJson(filePath) {
 function loadCatalog(repoRoot) {
   const expertsPath = path.join(repoRoot, "data", "experts", "alanclaw-experts.json");
   const mapPath = path.join(repoRoot, "data", "execution", "expert-skill-map.json");
+  const teamTemplatesPath = path.join(repoRoot, "data", "team-templates", "alanclaw-team-templates.json");
   return {
     experts: readJson(expertsPath),
     skillMap: readJson(mapPath),
+    teamTemplates: readJson(teamTemplatesPath),
     expertsPath,
     mapPath,
+    teamTemplatesPath,
   };
 }
 
-function validateCatalog(experts, skillMap) {
+function validateCatalog(experts, skillMap, teamTemplates = []) {
   const errors = [];
   const expertSlugs = new Set(experts.map((expert) => expert.slug));
   const mapSlugs = new Set(Object.keys(skillMap));
@@ -67,17 +71,38 @@ function validateCatalog(experts, skillMap) {
     }
   }
 
+  for (const team of teamTemplates) {
+    for (const member of team.recommended_experts ?? []) {
+      if (!expertSlugs.has(member.slug)) errors.push(`Team ${team.slug} references unknown expert slug: ${member.slug}`);
+      if (!skillMap[member.slug]) errors.push(`Team ${team.slug} member has no route: ${member.slug}`);
+    }
+  }
+
   return {
     ok: errors.length === 0,
     errors,
     expert_count: experts.length,
     route_count: mapSlugs.size,
+    team_count: teamTemplates.length,
     ready_candidate_count: Object.values(skillMap).filter((route) => route.status === "ready_candidate").length,
     blocked_external_account_count: Object.values(skillMap).filter((route) => route.status === "blocked_external_account").length,
   };
 }
 
-function buildRoutePlan(expert, route, args) {
+function routeSummary(expert, route, member = null) {
+  return {
+    expert_slug: expert.slug,
+    title: expert.title,
+    role: member?.role,
+    skill_key: route.skill_key,
+    intent: route.intent,
+    status: route.status,
+    requires_files: route.requires_files === true,
+    requires_external_account: route.requires_external_account === true,
+  };
+}
+
+function routeWarnings(route, args) {
   const warnings = [];
   if (route.requires_external_account) {
     warnings.push("This route requires an external account adapter and explicit user confirmation before any real execution.");
@@ -88,6 +113,11 @@ function buildRoutePlan(expert, route, args) {
   if (route.status === "manual") {
     warnings.push("This expert is currently manual/prompt-only; no skill execution should be attempted.");
   }
+  return warnings;
+}
+
+function buildRoutePlan(expert, route, args) {
+  const warnings = routeWarnings(route, args);
 
   return {
     ok: true,
@@ -110,6 +140,40 @@ function buildRoutePlan(expert, route, args) {
     next_step: route.requires_external_account
       ? "Stop at planning. Add authorization, confirmation, audit logging, and a dedicated adapter before execution."
       : `Prepare a ${route.skill_key} / ${route.intent} plan. Do not execute external side effects in this router.`,
+  };
+}
+
+function buildTeamRoutePlan(team, experts, skillMap, args) {
+  const expertBySlug = new Map(experts.map((expert) => [expert.slug, expert]));
+  const routes = team.recommended_experts.map((member) => {
+    const expert = expertBySlug.get(member.slug);
+    return {
+      ...routeSummary(expert, skillMap[member.slug], member),
+      reason: member.reason,
+    };
+  });
+  const warnings = routes.flatMap((route) => {
+    const routeWarnings = [];
+    if (route.requires_external_account) routeWarnings.push(`${route.expert_slug} requires external account authorization before execution.`);
+    if (route.requires_files && args.files.length === 0) routeWarnings.push(`${route.expert_slug} expects files, but no --files value was provided.`);
+    if (route.status === "manual") routeWarnings.push(`${route.expert_slug} is manual/prompt-only.`);
+    return routeWarnings;
+  });
+
+  return {
+    ok: true,
+    execution_mode: "plan_only",
+    team: {
+      slug: team.slug,
+      title: team.title,
+      industry: team.industry,
+      member_count: routes.length,
+    },
+    task: args.task ?? "",
+    files: args.files,
+    routes,
+    warnings,
+    next_step: "Review the team route plan. Do not execute external side effects in this router.",
   };
 }
 
@@ -136,6 +200,7 @@ function help() {
       "node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --validate --json",
       "node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --list --json",
       "node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --expert-slug excel-data-cleanup-expert --task \"clean customer table\" --files customers.xlsx --json",
+      "node skills/alanclaw_expert_router/scripts/route-expert-task.mjs --team-slug construction-project-team --task \"plan construction project follow-up\" --files meeting-notes.docx,boq.xlsx --json",
     ],
   };
 }
@@ -147,8 +212,8 @@ try {
     process.exit(0);
   }
 
-  const { experts, skillMap } = loadCatalog(args.repoRoot);
-  const validation = validateCatalog(experts, skillMap);
+  const { experts, skillMap, teamTemplates } = loadCatalog(args.repoRoot);
+  const validation = validateCatalog(experts, skillMap, teamTemplates);
   if (args.validate) {
     print(validation, args.json);
     process.exit(validation.ok ? 0 : 1);
@@ -168,8 +233,18 @@ try {
     process.exit(0);
   }
 
+  if (args.teamSlug) {
+    const team = teamTemplates.find((item) => item.slug === args.teamSlug);
+    if (!team) {
+      print({ ok: false, errors: [`Unknown team slug: ${args.teamSlug}`] }, args.json);
+      process.exit(1);
+    }
+    print(buildTeamRoutePlan(team, experts, skillMap, args), args.json);
+    process.exit(0);
+  }
+
   if (!args.expertSlug) {
-    throw new Error("Missing required argument: --expert-slug");
+    throw new Error("Missing required argument: --expert-slug or --team-slug");
   }
 
   const expert = experts.find((item) => item.slug === args.expertSlug);
