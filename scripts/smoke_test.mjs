@@ -11,6 +11,26 @@ function record(name, ok, detail = "") {
   console.log(`${marker} ${name}${detail ? ` - ${detail}` : ""}`);
 }
 
+function runNodeScript(args) {
+  return new Promise((resolve) => {
+    const script = spawn(process.execPath, args, {
+      cwd: new URL("..", import.meta.url),
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    script.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+    });
+    script.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+    script.on("close", (code) => {
+      resolve({ code, stdout, stderr });
+    });
+  });
+}
+
 async function waitForServer() {
   const deadline = Date.now() + 6000;
   while (Date.now() < deadline) {
@@ -54,6 +74,35 @@ try {
 
   const experts = await fetchJson("/api/experts");
   record("GET /api/experts", experts.response.status === 200 && experts.json.count === 18, `count ${experts.json.count}`);
+
+  const routerValidation = await runNodeScript(["skills/alanclaw_expert_router/scripts/route-expert-task.mjs", "--validate", "--json"]);
+  const routerValidationJson = JSON.parse(routerValidation.stdout);
+  record(
+    "AlanClaw expert router validates map",
+    routerValidation.code === 0 && routerValidationJson.ok === true && routerValidationJson.expert_count === 18 && routerValidationJson.route_count === 18,
+    `routes ${routerValidationJson.route_count ?? "n/a"}`
+  );
+
+  const routerPlan = await runNodeScript([
+    "skills/alanclaw_expert_router/scripts/route-expert-task.mjs",
+    "--expert-slug",
+    "excel-data-cleanup-expert",
+    "--task",
+    "clean customer table",
+    "--files",
+    "customers.xlsx",
+    "--json",
+  ]);
+  const routerPlanJson = JSON.parse(routerPlan.stdout);
+  record(
+    "AlanClaw expert router returns plan",
+    routerPlan.code === 0 &&
+      routerPlanJson.ok === true &&
+      routerPlanJson.execution_mode === "plan_only" &&
+      routerPlanJson.route.skill_key === "xlsx" &&
+      routerPlanJson.route.intent === "clean_table",
+    `${routerPlanJson.route?.skill_key ?? "n/a"}/${routerPlanJson.route?.intent ?? "n/a"}`
+  );
 
   const teamTemplates = await fetchJson("/api/team-templates");
   record(

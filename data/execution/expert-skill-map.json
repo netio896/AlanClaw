@@ -1,0 +1,128 @@
+{
+  "myanmar-sales-assistant": {
+    "skill_key": "prompt-engineer",
+    "intent": "sales_reply_draft",
+    "status": "manual",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "telegram-support-expert": {
+    "skill_key": "telegram-support-placeholder",
+    "intent": "telegram_support_reply",
+    "status": "blocked_external_account",
+    "requires_files": false,
+    "requires_external_account": true
+  },
+  "facebook-page-reply-expert": {
+    "skill_key": "facebook-page-placeholder",
+    "intent": "facebook_comment_or_dm_reply",
+    "status": "blocked_external_account",
+    "requires_files": false,
+    "requires_external_account": true
+  },
+  "burmese-english-chinese-translator": {
+    "skill_key": "prompt-engineer",
+    "intent": "translate_and_localize",
+    "status": "planned",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "quotation-invoice-assistant": {
+    "skill_key": "docx",
+    "intent": "quotation_invoice_draft",
+    "status": "planned",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "document-summary-qa-expert": {
+    "skill_key": "pdf",
+    "intent": "document_summary_qa",
+    "status": "ready_candidate",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "project-followup-assistant": {
+    "skill_key": "doc-organizer",
+    "intent": "project_followup_plan",
+    "status": "planned",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "excel-data-cleanup-expert": {
+    "skill_key": "xlsx",
+    "intent": "clean_table",
+    "status": "ready_candidate",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "ecommerce-support-automation-expert": {
+    "skill_key": "prompt-engineer",
+    "intent": "faq_flow_design",
+    "status": "manual",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "myanmar-market-intel-expert": {
+    "skill_key": "multi-search-engine",
+    "intent": "market_research_brief",
+    "status": "planned",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "social-copywriting-expert": {
+    "skill_key": "prompt-engineer",
+    "intent": "social_copy_draft",
+    "status": "manual",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "facebook-ads-assistant": {
+    "skill_key": "facebook-ads-placeholder",
+    "intent": "ad_plan_draft",
+    "status": "blocked_external_account",
+    "requires_files": false,
+    "requires_external_account": true
+  },
+  "quotation-followup-assistant": {
+    "skill_key": "email-skill",
+    "intent": "quotation_followup_email",
+    "status": "planned",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "customer-followup-expert": {
+    "skill_key": "email-skill",
+    "intent": "customer_followup_draft",
+    "status": "planned",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "meeting-minutes-assistant": {
+    "skill_key": "docx",
+    "intent": "meeting_minutes_to_actions",
+    "status": "ready_candidate",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "document-organizer-master": {
+    "skill_key": "doc-organizer",
+    "intent": "organize_documents",
+    "status": "ready_candidate",
+    "requires_files": true,
+    "requires_external_account": false
+  },
+  "multilingual-support-expert": {
+    "skill_key": "prompt-engineer",
+    "intent": "multilingual_support_reply",
+    "status": "manual",
+    "requires_files": false,
+    "requires_external_account": false
+  },
+  "content-topic-planner": {
+    "skill_key": "multi-search-engine",
+    "intent": "content_topic_plan",
+    "status": "ready_candidate",
+    "requires_files": false,
+    "requires_external_account": false
+  }
+}

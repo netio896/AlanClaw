@@ -92,7 +92,7 @@ expert.slug -> candidate skill_key -> intent -> execution status
 
 ## 后续数据文件建议
 
-Phase 2 可以新增独立映射文件：
+Phase 2 已新增独立映射文件：
 
 ```text
 data/execution/expert-skill-map.json
@@ -112,16 +112,16 @@ data/execution/expert-skill-map.json
 }
 ```
 
-同时新增校验：
+同时新增 smoke 校验：
 
 - 每个 key 必须存在于 `data/experts/alanclaw-experts.json`
 - 每位专家必须有映射或显式 `status: "manual"`
 - `skill_key` 不为空，除非 `status` 是 `manual`
 - `blocked_external_account` 必须标记 `requires_external_account: true`
 
-## Router 原型输入输出草案
+## Router 原型输入输出
 
-未来 `skills/alanclaw_expert_router/scripts/route-expert-task.mjs` 可接受：
+`skills/alanclaw_expert_router/scripts/route-expert-task.mjs` 当前可接受：
 
 ```json
 {
@@ -146,7 +146,7 @@ data/execution/expert-skill-map.json
 }
 ```
 
-第一版 router 应保持 `execution_mode: "plan_only"`，只返回路由计划，不执行外部服务。
+第一版 router 保持 `execution_mode: "plan_only"`，只返回路由计划，不执行外部服务。
 
 ## 验收边界
 

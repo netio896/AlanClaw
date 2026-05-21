@@ -11,17 +11,18 @@ AlanClaw 现在已经具备：
 - 18 位专家目录
 - 3 套行业 Agent Team 模板
 - 专家和团队模板的本地校验、保存与数据生成
+- `data/execution/expert-skill-map.json` 专家到候选 skill 的独立映射
+- `skills/alanclaw_expert_router/` plan-only 独立 skill 入口
 - `npm run smoke` 本地验收
 
 AlanClaw 现在还没有：
 
-- `skills/` 工作区技能目录
-- AlanClaw 专用 `SKILL.md`
 - OpenClaw Gateway 配置
-- 技能安装、启用、执行或调用链
-- 专家到真实技能的执行映射
+- 技能安装或启用流程
+- 真实外部服务执行调用链
+- 专家到真实 skill adapter 的执行实现
 
-当前唯一明确的 OpenClaw 关系在产品定位中：AlanClaw 上层提供专家广场和行业团队体验，底层未来可对接 OpenClaw/Hermes 一类执行与记忆能力。
+当前 OpenClaw 关系已经推进到 plan-only 阶段：AlanClaw 上层提供专家广场和行业团队体验，底层已有独立 router skill 读取本地专家和映射数据，但仍不做真实执行。
 
 ## 本地 QClaw Skills 观察
 
@@ -198,6 +199,8 @@ data/execution/expert-skill-map.json
 - 不存在未知专家 slug
 - 不存在空 skill_key
 
+当前状态：已新增独立映射数据和 `alanclaw_expert_router` plan-only skill，smoke 已覆盖映射完整性和 Excel 专家路由计划。
+
 ### Phase 3: Admin 只读展示
 
 目标：
@@ -273,4 +276,4 @@ data/execution/expert-skill-map.json
 
 已新增 `docs/architecture/expert-skill-routing.md`，为 18 位专家建立候选 skill 映射表。
 
-下一步可进入 Phase 2：新增独立映射数据文件 `data/execution/expert-skill-map.json`，并用 smoke 增加映射完整性检查。
+下一步可进入 Phase 3：在 Admin 专家详情中只读展示执行映射，不提供执行按钮，不向 Web 暴露技术字段。

@@ -53,7 +53,11 @@
 
 ### skills/
 
-未来 OpenClaw/QClaw 工作区级技能目录。当前仓库尚未启用该目录，集成边界见 `docs/architecture/openclaw-integration-notes.md`。
+OpenClaw/QClaw 工作区级技能目录。当前包含 `alanclaw_expert_router` plan-only skill，用于读取专家目录和执行映射，返回候选 skill 路由计划。
+
+### data/execution/
+
+未来执行层映射数据。当前包含 `expert-skill-map.json`，用于把专家 `slug` 映射到候选 `skill_key`、`intent` 和安全状态。
 
 ## 当前边界
 
