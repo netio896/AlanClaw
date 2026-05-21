@@ -375,6 +375,26 @@ textarea { resize: vertical; line-height: 1.5; }
   font-size: 12px;
   line-height: 1.45;
 }
+.team-route-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.team-route-item {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+}
+.team-route-item strong { font-size: 13px; }
+.team-route-item p, .team-route-item span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.team-route-item.route-missing strong { color: var(--bad); }
 .member-editor {
   grid-column: 1 / -1;
 }

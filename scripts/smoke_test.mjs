@@ -198,8 +198,11 @@ try {
     adminPage.text.includes('data-admin-workspace="experts"') &&
     adminPage.text.includes('data-admin-workspace="teams"') &&
     adminPage.text.includes('id="executionRouteMeta"') &&
+    adminPage.text.includes('id="teamExecutionRouteList"') &&
     adminApp.text.includes('fetch("/api/execution-map")') &&
     adminApp.text.includes("renderExecutionRoute(expert)") &&
+    adminTeamEditor.text.includes('fetch("/api/execution-map")') &&
+    adminTeamEditor.text.includes("renderTeamExecutionRoutes()") &&
     adminApp.text.includes('elements.saveButton.addEventListener("click", saveCatalog)') &&
     adminApp.text.includes('elements.reloadButton.addEventListener("click", loadFromApi)') &&
     adminApp.text.includes('elements.importButton.addEventListener("click"') &&
@@ -212,6 +215,16 @@ try {
     "Admin button wiring",
     adminApp.response.status === 200 && adminTeamEditor.response.status === 200 && adminButtonWiringOk,
     `status ${adminApp.response.status}/${adminTeamEditor.response.status}`
+  );
+
+  const constructionTeam = teamTemplates.json.team_templates.find((team) => team.slug === "construction-project-team");
+  const constructionTeamRoutesOk =
+    constructionTeam?.recommended_experts.length === 7 &&
+    constructionTeam.recommended_experts.every((member) => Boolean(executionMap.json.execution_map[member.slug]));
+  record(
+    "Admin team execution routing data",
+    Boolean(constructionTeamRoutesOk),
+    `members ${constructionTeam?.recommended_experts.length ?? "n/a"}`
   );
 
   const webPage = await fetchText("/web/index.html");

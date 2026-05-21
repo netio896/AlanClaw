@@ -1,4 +1,5 @@
 const teamEditorExperts = Array.isArray(window.ALANCLAW_EXPERTS) ? window.ALANCLAW_EXPERTS : [];
+let teamExecutionMap = {};
 let editableTeamTemplates = Array.isArray(window.ALANCLAW_TEAM_TEMPLATES)
   ? structuredClone(window.ALANCLAW_TEAM_TEMPLATES)
   : [];
@@ -31,6 +32,7 @@ const teamElements = {
   validationList: document.getElementById("teamValidationList"),
   diffSummary: document.getElementById("teamDiffSummary"),
   diffList: document.getElementById("teamDiffList"),
+  routeList: document.getElementById("teamExecutionRouteList"),
   expertSlugOptions: document.getElementById("expertSlugOptions"),
 };
 
@@ -312,11 +314,38 @@ function renderTeamDiff() {
   teamElements.diffList.innerHTML = items.slice(0, 12).join("");
 }
 
+function renderTeamExecutionRoutes() {
+  const team = selectedTeamTemplate();
+  if (!team) return;
+
+  teamElements.routeList.innerHTML = team.recommended_experts
+    .map((member) => {
+      const expert = teamEditorExperts.find((item) => item.slug === member.slug);
+      const route = teamExecutionMap[member.slug];
+      if (!route) {
+        return `
+          <article class="team-route-item route-missing">
+            <strong>${teamEscapeHtml(member.role || "未命名角色")}</strong>
+            <p>${teamEscapeHtml(member.slug || "未选择专家")} · 未配置执行映射</p>
+          </article>`;
+      }
+
+      return `
+        <article class="team-route-item">
+          <strong>${teamEscapeHtml(member.role || expert?.title || member.slug)}</strong>
+          <p>${teamEscapeHtml(expert?.title || member.slug)} · ${teamEscapeHtml(route.skill_key)} / ${teamEscapeHtml(route.intent)}</p>
+          <span>${teamEscapeHtml(route.status)} · 文件：${route.requires_files ? "是" : "否"} · 外部账号：${route.requires_external_account ? "是" : "否"}</span>
+        </article>`;
+    })
+    .join("");
+}
+
 function renderTeamEditorApp() {
   renderTeamList();
   renderTeamEditor();
   renderTeamValidation();
   renderTeamDiff();
+  renderTeamExecutionRoutes();
   teamElements.saveButton.disabled = !teamState.apiAvailable;
 }
 
@@ -343,10 +372,13 @@ function updateMemberField(index, field, value) {
 
 async function loadTeamTemplatesFromApi() {
   try {
-    const response = await fetch("/api/team-templates");
+    const [response, executionMapResponse] = await Promise.all([fetch("/api/team-templates"), fetch("/api/execution-map")]);
     if (!response.ok) throw new Error(`GET /api/team-templates ${response.status}`);
+    if (!executionMapResponse.ok) throw new Error(`GET /api/execution-map ${executionMapResponse.status}`);
     const payload = await response.json();
+    const executionMapPayload = await executionMapResponse.json();
     editableTeamTemplates = normalizeTeamCatalog(payload.team_templates);
+    teamExecutionMap = executionMapPayload.execution_map ?? {};
     baselineTeamTemplates = structuredClone(editableTeamTemplates);
     window.ALANCLAW_TEAM_TEMPLATES = editableTeamTemplates;
     teamState.apiAvailable = true;
@@ -451,6 +483,7 @@ document.addEventListener("click", (event) => {
     renderTeamEditor();
     renderTeamValidation();
     renderTeamDiff();
+    renderTeamExecutionRoutes();
     setTeamStatus("团队成员有未保存修改，请检查右侧变更后保存。", "warn");
   }
 });
@@ -475,6 +508,7 @@ teamElements.addMemberButton.addEventListener("click", () => {
   renderTeamEditor();
   renderTeamValidation();
   renderTeamDiff();
+  renderTeamExecutionRoutes();
   setTeamStatus("已添加团队成员，请检查内容后保存。", "warn");
 });
 
