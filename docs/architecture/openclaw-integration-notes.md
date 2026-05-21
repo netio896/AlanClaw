@@ -271,6 +271,6 @@ data/execution/expert-skill-map.json
 
 ## 下一步建议
 
-最有价值的下一步是新增 `docs/architecture/expert-skill-routing.md`，为 18 位专家做候选 skill 映射表。
+已新增 `docs/architecture/expert-skill-routing.md`，为 18 位专家建立候选 skill 映射表。
 
-这一步仍然不改运行时代码，但可以把 AlanClaw 从“专家 marketplace”推进到“可执行 Agent marketplace”的设计准备阶段。
+下一步可进入 Phase 2：新增独立映射数据文件 `data/execution/expert-skill-map.json`，并用 smoke 增加映射完整性检查。
