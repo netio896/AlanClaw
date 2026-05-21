@@ -131,13 +131,21 @@ try {
     userSkillDirectoryReferences.length ? userSkillDirectoryReferences.slice(0, 3).join("; ") : "no references"
   );
 
+  const executionMapValidation = await runNodeScript(["scripts/validate_execution_map.mjs", "--json"]);
+  const executionMapValidationJson = JSON.parse(executionMapValidation.stdout);
+  record(
+    "Execution map validates",
+    executionMapValidation.code === 0 &&
+      executionMapValidationJson.ok === true &&
+      executionMapValidationJson.expert_count === 18 &&
+      executionMapValidationJson.route_count === 18 &&
+      executionMapValidationJson.team_count === 3,
+    `routes ${executionMapValidationJson.route_count ?? "n/a"}`
+  );
+
   const routerValidation = await runNodeScript(["skills/alanclaw_expert_router/scripts/route-expert-task.mjs", "--validate", "--json"]);
   const routerValidationJson = JSON.parse(routerValidation.stdout);
-  record(
-    "AlanClaw expert router validates map",
-    routerValidation.code === 0 && routerValidationJson.ok === true && routerValidationJson.expert_count === 18 && routerValidationJson.route_count === 18,
-    `routes ${routerValidationJson.route_count ?? "n/a"}`
-  );
+  record("AlanClaw expert router reuses execution validation", routerValidation.code === 0 && routerValidationJson.ok === true, "ok");
 
   const routerPlan = await runNodeScript([
     "skills/alanclaw_expert_router/scripts/route-expert-task.mjs",

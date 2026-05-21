@@ -2,11 +2,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateExecutionMap } from "../../../scripts/validate_execution_map.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const skillRoot = path.resolve(path.dirname(scriptPath), "..");
 const defaultRepoRoot = path.resolve(skillRoot, "..", "..");
-const allowedStatuses = new Set(["ready_candidate", "planned", "manual", "blocked_external_account"]);
 
 function parseArgs(argv) {
   const args = {
@@ -49,43 +49,6 @@ function loadCatalog(repoRoot) {
     expertsPath,
     mapPath,
     teamTemplatesPath,
-  };
-}
-
-function validateCatalog(experts, skillMap, teamTemplates = []) {
-  const errors = [];
-  const expertSlugs = new Set(experts.map((expert) => expert.slug));
-  const mapSlugs = new Set(Object.keys(skillMap));
-
-  for (const expert of experts) {
-    if (!skillMap[expert.slug]) errors.push(`Missing route for expert slug: ${expert.slug}`);
-  }
-
-  for (const [slug, route] of Object.entries(skillMap)) {
-    if (!expertSlugs.has(slug)) errors.push(`Route references unknown expert slug: ${slug}`);
-    if (!allowedStatuses.has(route.status)) errors.push(`${slug} has invalid status: ${route.status}`);
-    if (route.status !== "manual" && !route.skill_key) errors.push(`${slug} must define skill_key unless status is manual`);
-    if (!route.intent) errors.push(`${slug} must define intent`);
-    if (route.status === "blocked_external_account" && route.requires_external_account !== true) {
-      errors.push(`${slug} is blocked_external_account but requires_external_account is not true`);
-    }
-  }
-
-  for (const team of teamTemplates) {
-    for (const member of team.recommended_experts ?? []) {
-      if (!expertSlugs.has(member.slug)) errors.push(`Team ${team.slug} references unknown expert slug: ${member.slug}`);
-      if (!skillMap[member.slug]) errors.push(`Team ${team.slug} member has no route: ${member.slug}`);
-    }
-  }
-
-  return {
-    ok: errors.length === 0,
-    errors,
-    expert_count: experts.length,
-    route_count: mapSlugs.size,
-    team_count: teamTemplates.length,
-    ready_candidate_count: Object.values(skillMap).filter((route) => route.status === "ready_candidate").length,
-    blocked_external_account_count: Object.values(skillMap).filter((route) => route.status === "blocked_external_account").length,
   };
 }
 
@@ -213,7 +176,7 @@ try {
   }
 
   const { experts, skillMap, teamTemplates } = loadCatalog(args.repoRoot);
-  const validation = validateCatalog(experts, skillMap, teamTemplates);
+  const validation = validateExecutionMap({ experts, skillMap, teamTemplates });
   if (args.validate) {
     print(validation, args.json);
     process.exit(validation.ok ? 0 : 1);

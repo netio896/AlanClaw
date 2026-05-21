@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alanclaw.local/schemas/expert-skill-map.schema.json",
+  "title": "AlanClaw Expert Skill Map",
+  "type": "object",
+  "propertyNames": {
+    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+  },
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "skill_key",
+      "intent",
+      "status",
+      "requires_files",
+      "requires_external_account"
+    ],
+    "properties": {
+      "skill_key": {
+        "type": "string",
+        "minLength": 1
+      },
+      "intent": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+      },
+      "status": {
+        "enum": [
+          "ready_candidate",
+          "planned",
+          "manual",
+          "blocked_external_account"
+        ]
+      },
+      "requires_files": {
+        "type": "boolean"
+      },
+      "requires_external_account": {
+        "type": "boolean"
+      }
+    }
+  }
+}
