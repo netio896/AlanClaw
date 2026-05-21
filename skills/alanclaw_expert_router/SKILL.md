@@ -1,6 +1,6 @@
 ---
 name: alanclaw_expert_router
-description: "AlanClaw expert router: reads the local expert catalog and execution map, then returns a plan-only route from expert slug to candidate OpenClaw/QClaw skill intent. Use when AlanClaw needs to decide which skill should handle an expert task without executing external services."
+description: "AlanClaw expert router: reads the repository expert catalog and execution map, then returns a plan-only route from expert slug to candidate skill intent. Use when AlanClaw needs to decide which skill should handle an expert task without reading user-level skill directories or executing external services."
 metadata:
   openclaw:
     skillKey: alanclaw_expert_router
@@ -10,7 +10,7 @@ metadata:
 
 # AlanClaw Expert Router
 
-This skill is the workspace-level routing entry for AlanClaw. It reads the local repository data and returns a routing plan. It does not execute Telegram, Facebook, Email, file writes, ads, or third-party actions.
+This skill is the repository-local routing entry for AlanClaw. It reads only AlanClaw repository data and returns a routing plan. It does not read user-level skill directories, execute Telegram, Facebook, Email, file writes, ads, or third-party actions.
 
 ## What It Reads
 

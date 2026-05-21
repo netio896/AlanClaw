@@ -1,6 +1,6 @@
 # AlanClaw OpenClaw Integration Notes
 
-本文记录 AlanClaw 未来对接 OpenClaw/QClaw skills 的设计边界。当前仓库还没有 OpenClaw 执行层，本文件用于先固定集成方向，避免过早把 marketplace、Admin 数据和技能运行时混在一起。
+本文记录 AlanClaw 未来对接执行型 skills 的设计边界。当前仓库只包含 plan-only router，本文件用于固定集成方向，避免把 marketplace、Admin 数据和技能运行时混在一起。
 
 ## 当前事实
 
@@ -24,9 +24,11 @@ AlanClaw 现在还没有：
 
 当前 OpenClaw 关系已经推进到 plan-only 阶段：AlanClaw 上层提供专家广场和行业团队体验，底层已有独立 router skill 读取本地专家和映射数据，但仍不做真实执行。
 
-## 本地 QClaw Skills 观察
+## Skill 目录隔离原则
 
-只读检查 `C:\Users\Nelson-AI\.qclaw\skills` 后，可参考的共性约定是：
+AlanClaw 必须和用户级 skill 目录隔离。仓库内代码、文档和 smoke 只允许引用本仓库下的 `skills/`，不读取用户主目录中的 skill 缓存或安装目录。
+
+仓库内 skill 约定：
 
 - 每个 skill 通常以独立目录存在。
 - `SKILL.md` 是主要入口说明。
@@ -34,9 +36,9 @@ AlanClaw 现在还没有：
 - `metadata.openclaw.skillKey` 与技能目录名需要保持一致，便于 OpenClaw 配置或 allowlist 引用。
 - 技能根目录可能包含 `scripts/`、`references/`、`assets/`、`package.json` 或语言依赖文件。
 - 技能执行通常要求在技能根目录运行脚本。
-- 技能可以被放在工作区 `./skills/<skill_key>/`，也可以放在用户级 skills 目录。
+- AlanClaw 当前只使用工作区 `./skills/<skill_key>/`，不依赖用户级目录。
 
-这些是现有本地资料中的实践观察，不等同于 AlanClaw 已经实现的运行能力。
+这些约定只适用于 AlanClaw 仓库内的自包含 skill。
 
 ## 集成原则
 
@@ -49,7 +51,7 @@ AlanClaw 的 Web/Admin 继续负责：
 - 管理行业团队模板
 - 维护业务场景、语言、渠道、摘要和提示词
 
-OpenClaw/QClaw skills 负责：
+执行型 skills 负责：
 
 - 真正执行任务
 - 读取文件或外部输入

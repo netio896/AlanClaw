@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { fileURLToPath } from "node:url";
 
 const port = Number(process.env.SMOKE_PORT || 4180);
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -28,6 +31,42 @@ function runNodeScript(args) {
     script.on("close", (code) => {
       resolve({ code, stdout, stderr });
     });
+  });
+}
+
+function listTextFiles(rootDir, dirs) {
+  const allowedExts = new Set([".md", ".mjs", ".js", ".json", ".html", ".css", ".csv", ".txt"]);
+  const files = [];
+
+  function walk(current) {
+    if (!fs.existsSync(current)) return;
+    const currentStat = fs.statSync(current);
+    if (currentStat.isFile()) {
+      if (allowedExts.has(path.extname(current).toLowerCase())) files.push(current);
+      return;
+    }
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else if (allowedExts.has(path.extname(entry.name).toLowerCase())) {
+        files.push(fullPath);
+      }
+    }
+  }
+
+  dirs.forEach((dir) => walk(path.join(rootDir, dir)));
+  return files;
+}
+
+function findUserSkillDirectoryReferences(rootDir) {
+  const forbidden = [`.${"q"}claw`, `${"Q"}Claw`, `${"q"}claw`];
+  const files = listTextFiles(rootDir, ["README.md", "apps", "content", "data", "docs", "packages", "schemas", "scripts", "skills"]);
+  return files.flatMap((filePath) => {
+    const text = fs.readFileSync(filePath, "utf8");
+    return forbidden
+      .filter((token) => text.includes(token))
+      .map((token) => `${path.relative(rootDir, filePath)} contains ${token}`);
   });
 }
 
@@ -74,6 +113,13 @@ try {
 
   const experts = await fetchJson("/api/experts");
   record("GET /api/experts", experts.response.status === 200 && experts.json.count === 18, `count ${experts.json.count}`);
+
+  const userSkillDirectoryReferences = findUserSkillDirectoryReferences(fileURLToPath(new URL("..", import.meta.url)));
+  record(
+    "Repository is isolated from user skill directories",
+    userSkillDirectoryReferences.length === 0,
+    userSkillDirectoryReferences.length ? userSkillDirectoryReferences.slice(0, 3).join("; ") : "no references"
+  );
 
   const routerValidation = await runNodeScript(["skills/alanclaw_expert_router/scripts/route-expert-task.mjs", "--validate", "--json"]);
   const routerValidationJson = JSON.parse(routerValidation.stdout);

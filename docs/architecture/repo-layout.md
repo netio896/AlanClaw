@@ -53,7 +53,7 @@
 
 ### skills/
 
-OpenClaw/QClaw 工作区级技能目录。当前包含 `alanclaw_expert_router` plan-only skill，用于读取专家目录和执行映射，返回候选 skill 路由计划。
+仓库内工作区级技能目录。当前包含 `alanclaw_expert_router` plan-only skill，用于读取专家目录和执行映射，返回候选 skill 路由计划。该目录必须与用户级 skill 目录隔离。
 
 ### data/execution/
 

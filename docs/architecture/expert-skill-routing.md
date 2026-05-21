@@ -1,6 +1,6 @@
 # AlanClaw Expert Skill Routing Draft
 
-本文为 18 位 AlanClaw 专家建立候选 OpenClaw/QClaw skill 路由表。当前只是设计映射，不改专家数据结构、不创建 `skills/` 目录、不接入真实执行。
+本文为 18 位 AlanClaw 专家建立仓库内候选 skill 路由表。当前只是设计映射，不改专家展示数据结构，不接入真实外部执行。
 
 ## 目标
 
@@ -25,7 +25,7 @@ expert.slug -> candidate skill_key -> intent -> execution status
 
 ## 候选 Skill 参考
 
-来自本地只读观察 `C:\Users\Nelson-AI\.qclaw\skills`，可参考的候选目录包括：
+AlanClaw 的执行映射必须保持仓库自包含，不读取用户级 skill 目录。候选 `skill_key` 先作为抽象执行能力命名：
 
 - `xlsx`: 表格读取、整理、转换类任务。
 - `pdf`: PDF 阅读、提取、摘要类任务。
@@ -37,7 +37,7 @@ expert.slug -> candidate skill_key -> intent -> execution status
 - `prompt-engineer`: 提示词或文本任务包装。
 - `doc-organizer`: 文档整理和归档。
 
-这些只是候选，不表示 AlanClaw 已经能调用它们。
+这些只是候选能力名，不表示 AlanClaw 已经能调用外部 skill 或用户本地 skill。
 
 ## 路由表
 
