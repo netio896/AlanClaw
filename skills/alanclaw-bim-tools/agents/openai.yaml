@@ -1,0 +1,3 @@
+display_name: AlanClaw BIM Tools
+short_description: IFC and floor-plan workflow guide.
+default_prompt: Use AlanClaw BIM Tools to choose between IFC hierarchy viewing and floor-plan detection, then prepare the result for the construction agent team.
