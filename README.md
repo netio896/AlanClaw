@@ -31,6 +31,7 @@ npm run smoke
 
 - [Web and Admin 使用手册](docs/usage/admin-and-web-usage.md)
 - [Open WebUI AlanClaw BIM Tools Prompt](docs/integrations/openwebui-alanbim.md)
+- [Open WebUI AlanClaw Electrical PV Systems](docs/integrations/openwebui-alanpv.md)
 - [AlanClaw v0.2 Release Notes](docs/releases/v0.2.md)
 
 ## Current Deliverables

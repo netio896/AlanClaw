@@ -1,0 +1,24 @@
+{
+  "name": "AlanClaw Electrical PV Systems",
+  "description": "Knowledge base for AlanClaw electrical and photovoltaic workflows, including low-voltage distribution, PV system planning, BOQ pre-checks, construction sequence, and inspection coordination.",
+  "tags": [
+    "AlanClaw",
+    "Electrical",
+    "PV",
+    "Solar",
+    "Construction",
+    "BOQ"
+  ],
+  "recommended_sources": [
+    "skills/alanclaw-electrical-pv-systems/SKILL.md",
+    "skills/alanclaw-electrical-pv-systems/references/tool-map.md",
+    "docs/integrations/openwebui-alanpv.md"
+  ],
+  "linked_prompts": [
+    "/alanpv"
+  ],
+  "linked_models": [
+    "AlanClaw Electrical PV Team"
+  ],
+  "safety_boundary": "Electrical and PV outputs are preliminary planning materials only. Load calculations, cable sizes, protection ratings, grounding, lightning protection, PV string sizing, inverter capacity, generation estimates, grid connection, battery storage, BOQ quantities, prices, and construction safety conclusions require human confirmation."
+}

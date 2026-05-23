@@ -1,0 +1,17 @@
+{
+  "id": "alanclaw_electrical_pv_prompt",
+  "name": "AlanClaw Electrical PV Systems",
+  "command": "/alanpv",
+  "enabled": true,
+  "tags": [
+    "AlanClaw",
+    "Electrical",
+    "PV",
+    "Solar",
+    "Construction"
+  ],
+  "knowledge": [
+    "#AlanClaw Electrical PV Systems"
+  ],
+  "content": "Use AlanClaw Electrical + PV Systems and reference #AlanClaw Electrical PV Systems when relevant.\n\nFirst classify the request:\n- Electrical design/construction\n- PV system design/construction\n- Combined electrical + PV grid-tie workflow\n\nPlease produce:\n1. Scope summary\n2. Available inputs and missing inputs\n3. Preliminary electrical design checklist\n4. Preliminary PV design checklist, if relevant\n5. BOQ pre-check table\n6. Construction sequence and inspection checklist\n7. Questions for designer, electrician, PV installer, utility, site team, or client\n8. Confirmation message for the relevant team\n\nSafety boundary:\nAll load calculations, cable sizes, breaker/fuse/RCD/RCBO/SPD/isolator ratings, panel schedules, grounding, bonding, lightning protection, PV string sizing, inverter capacity, generation estimates, grid connection, battery storage, BOQ quantities, prices, and construction safety conclusions must be marked \"requires human confirmation\".\n\nUser input:\n{{input}}"
+}

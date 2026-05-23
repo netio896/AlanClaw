@@ -1,0 +1,3 @@
+display_name: AlanClaw Electrical + PV Systems
+short_description: Electrical and photovoltaic design and construction workflow guide.
+default_prompt: Use AlanClaw Electrical + PV Systems to prepare preliminary electrical/PV design checklists, BOQ pre-checks, construction inspection steps, and confirmation messages while marking engineering-critical conclusions as requiring human confirmation.
