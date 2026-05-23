@@ -9,6 +9,8 @@ This document records the Open WebUI prompt used to connect AlanClaw BIM workflo
 - Status: enabled
 - Knowledge base: `#AlanClaw BIM Tools`
 - Template file: `integrations/openwebui/prompts/alanbim.prompt.json`
+- Knowledge template: `integrations/openwebui/knowledge/alanclaw-bim-tools.knowledge.json`
+- Model template: `integrations/openwebui/models/alanclaw-construction-team.model.json`
 - Related Codex skill: `skills/alanclaw-bim-tools`
 
 ## Purpose
@@ -25,17 +27,32 @@ The prompt should route the input into AlanClaw 建筑行业团队 and preserve 
 ## Migration Steps
 
 1. Open Open WebUI.
-2. Go to `Workspace -> Prompts`.
-3. Create or edit a prompt named `AlanClaw BIM Tools`.
-4. Set command to `/alanbim`.
-5. Paste the `content` value from `integrations/openwebui/prompts/alanbim.prompt.json`.
-6. Enable the prompt.
-7. Attach or recreate the knowledge base named `AlanClaw BIM Tools`.
-8. In chat, type `/alanbim`, then paste IFC Viewer output, Floor Plan Detection output, a webpage link, or a project brief.
+2. Go to `Workspace -> Knowledge`.
+3. Create or edit a knowledge base named `AlanClaw BIM Tools`.
+4. Add the recommended sources listed in `integrations/openwebui/knowledge/alanclaw-bim-tools.knowledge.json`.
+5. Go to `Workspace -> Prompts`.
+6. Create or edit a prompt named `AlanClaw BIM Tools`.
+7. Set command to `/alanbim`.
+8. Paste the `content` value from `integrations/openwebui/prompts/alanbim.prompt.json`.
+9. Enable the prompt.
+10. If using a dedicated model, recreate `AlanClaw Construction Team` from `integrations/openwebui/models/alanclaw-construction-team.model.json`.
+11. In chat, type `/alanbim`, then paste IFC Viewer output, Floor Plan Detection output, a webpage link, or a project brief.
+
+## Team Setup URL
+
+For a local Open WebUI install, the knowledge page is usually:
+
+```text
+http://127.0.0.1:3000/workspace/knowledge
+```
+
+This URL is local to the machine running Open WebUI. For a team server, replace `127.0.0.1:3000` with the team's Open WebUI domain or LAN address.
 
 ## Migration Notes
 
 - Do not copy local Open WebUI `user_id` values into this repository.
 - Treat `integrations/openwebui/prompts/alanbim.prompt.json` as the portable template.
+- Treat `integrations/openwebui/knowledge/alanclaw-bim-tools.knowledge.json` as the portable knowledge manifest.
+- Treat `integrations/openwebui/models/alanclaw-construction-team.model.json` as the portable model profile.
 - If Open WebUI changes its export schema, keep this file as the source prompt text and manually map fields during import.
 - Keep `skills/alanclaw-bim-tools/SKILL.md` and this Open WebUI prompt aligned when changing BIM workflow rules.

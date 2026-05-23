@@ -1,0 +1,24 @@
+{
+  "name": "AlanClaw BIM Tools",
+  "description": "Knowledge base for AlanClaw construction/BIM workflows, including IFC hierarchy review, floor-plan detection, BOQ pre-checks, and engineering safety boundaries.",
+  "tags": [
+    "AlanClaw",
+    "BIM",
+    "Construction",
+    "IFC",
+    "Floor Plan",
+    "BOQ"
+  ],
+  "recommended_sources": [
+    "skills/alanclaw-bim-tools/SKILL.md",
+    "skills/alanclaw-bim-tools/references/tool-map.md",
+    "docs/integrations/openwebui-alanbim.md"
+  ],
+  "linked_prompts": [
+    "/alanbim"
+  ],
+  "linked_models": [
+    "AlanClaw Construction Team"
+  ],
+  "safety_boundary": "AI, OCR, floor-plan detection, and IFC parsing outputs are preliminary review materials only. Quantities, dimensions, materials, pricing, contract terms, safety issues, and construction conclusions require human confirmation."
+}
