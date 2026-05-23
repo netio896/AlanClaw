@@ -304,7 +304,7 @@ CUSTOM_CSS = """
 
 
 def build_app() -> gr.Blocks:
-    with gr.Blocks(css=CUSTOM_CSS, title="AlanClaw Myanmar Agent Team") as app:
+    with gr.Blocks(title="AlanClaw Myanmar Agent Team") as app:
         logo_html = ""
         if LOGO_PATH.exists():
             logo_html = f'<img src="/file={escape(str(LOGO_PATH))}" alt="AlanClaw logo">'
@@ -413,4 +413,4 @@ demo = build_app()
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(server_name="0.0.0.0", server_port=7860, css=CUSTOM_CSS)
