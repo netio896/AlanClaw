@@ -1,0 +1,17 @@
+{
+  "id": "alanclaw_bim_tools_prompt",
+  "name": "AlanClaw BIM Tools",
+  "command": "/alanbim",
+  "enabled": true,
+  "tags": [
+    "AlanClaw",
+    "BIM",
+    "Construction",
+    "IFC",
+    "Floor Plan"
+  ],
+  "knowledge": [
+    "#AlanClaw BIM Tools"
+  ],
+  "content": "使用 AlanClaw 建筑行业团队，并参考知识库 #AlanClaw BIM Tools。\n\n请先判断输入类型：\n- 如果是 .ifc / BIM 模型结果：按 IFC Hierarchy Viewer 工作流分析。\n- 如果是平面图截图、JPG、PNG、PDF 图片结果：按 Floor Plan Detection 工作流分析。\n- 如果是网页链接：可调用网页读取工具读取公开网页内容，再提取与 BIM / 施工 / 图纸 / BOQ 有关的信息。\n\n请输出：\n1. 初步空间、楼层、构件或房间摘要\n2. 房间、门窗或主要 IFC 类别的数量概览\n3. 可能需要人工复核的位置、字段和风险点\n4. BOQ 前置检查表\n5. 发给设计、施工、现场或客户团队的确认消息\n\n工程安全边界：\n- 不要把 AI 或模型识别结果当作最终工程数量。\n- 所有数量、尺寸、材料、报价、合同、安全和施工结论都必须标注“需人工确认”。\n- 面向客户时说明这是基于上传模型、图片或网页资料的初步审阅。\n\n用户输入：\n{{input}}"
+}
