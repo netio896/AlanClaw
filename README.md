@@ -30,6 +30,7 @@ npm run smoke
 ## Usage Guide
 
 - [Web and Admin 使用手册](docs/usage/admin-and-web-usage.md)
+- [AlanClaw v0.2 Release Notes](docs/releases/v0.2.md)
 
 ## Current Deliverables
 
